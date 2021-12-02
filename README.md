@@ -45,4 +45,8 @@ The password is `secret`.
 From there basics like `choria req choria_util info` will function until your
 JWT expire in a hour.
 
+The `choria` user above is a basic user, there's also an `admin` user with full 
+access to all subjects on the broker.
 
+For example `choria` could not do `choria broker s backup CHORIA_EVENTS /tmp/events`
+while the `admin` user can.
