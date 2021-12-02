@@ -1,0 +1,16 @@
+workers: 4
+interval: 5m
+logfile: /dev/stdout
+loglevel: info
+helper: /etc/choria-provisioner/provisioner/helper.rb
+token: s3cret
+choria_insecure: false
+site: testing
+broker_provisioning_password: provS3cret
+jwt_verify_cert: /etc/choria-provisioner/pki/provisioner-jwt-signer.crt
+jwt_signing_key: /etc/choria-provisioner/pki/node-jwt-signer.key
+
+features:
+  jwt: true
+  ed25519: true
+
