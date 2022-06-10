@@ -23,13 +23,13 @@ easyrsa --batch build-ca nopass
 log "Creating the provisioning.jwt Key pair in pki/provisioner"
 
 mkdir -p pki/provisioner
-openssl genrsa -out pki/provisioner/provisioner-jwt-signer.key 
+openssl genrsa -out pki/provisioner/provisioner-jwt-signer.key
 openssl rsa -in pki/provisioner/provisioner-jwt-signer.key -pubout > pki/provisioner/provisioner-jwt-signer.crt
 
 log "Creating the Node JWT Key pair in pki/provisioner"
 
 mkdir -p pki/provisioner
-openssl genrsa -out pki/provisioner/node-jwt-signer.key 
+openssl genrsa -out pki/provisioner/node-jwt-signer.key
 openssl rsa -in pki/provisioner/node-jwt-signer.key -pubout > pki/provisioner/node-jwt-signer.crt
 
 log "Creating the Provisioning Certificates in pki/provisioner"
@@ -69,5 +69,7 @@ cp pki/aaa/aaa-privileged.choria.crt pki/broker
 log "Creating provisioning.jwt for the servers in pki/server"
 mkdir -p pki/server
 rm -f pki/server/provisioning.jwt
-choria tool jwt pki/server/provisioning.jwt pki/provisioner/provisioner-jwt-signer.key --token s3cret --urls nats://broker:4222 --default
-choria tool jwt pki/server/provisioning.jwt pki/provisioner/provisioner-jwt-signer.crt
+choria jwt provisioning pki/server/provisioning.jwt pki/provisioner/provisioner-jwt-signer.key --token s3cret --urls nats://broker:4222 --default
+choria jwt pki/server/provisioning.jwt pki/provisioner/provisioner-jwt-signer.crt
+
+chmod a+r -R pki

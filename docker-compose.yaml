@@ -2,7 +2,7 @@ version: "3"
 services:
   broker.choria:
     hostname: broker.choria
-    image: docker.io/choria/choria:f5624b80
+    image: docker.io/choria/choria:20220610
     dns_search: choria
     command: broker run --config /etc/choria/broker/broker.conf
     volumes:
@@ -10,7 +10,7 @@ services:
       - ./pki/broker:/etc/choria/pki
     networks:
       - choria
-                
+
   provisioner.choria:
     hostname: provisioner.choria
     image: choria/provisioner:0.13.0
@@ -21,16 +21,20 @@ services:
       - ./pki/provisioner:/etc/choria-provisioner/pki
     networks:
       - choria
-  
+    depends_on:
+      - broker.choria
+
   server.choria:
-    image: docker.io/choria/choria:f5624b80
+    image: docker.io/choria/choria:20220610
     dns_search: choria
     command: server run --config /etc/choria/server.conf
     volumes:
       - ./pki/server/provisioning.jwt:/etc/choria/provisioning.jwt
     networks:
       - choria
-    
+    depends_on:
+      - broker.choria
+
   aaa.choria:
     hostname: aaa.choria
     image: choria/aaasvc:0.6.0
@@ -41,10 +45,12 @@ services:
       - ./pki/aaa:/etc/aaasvc/pki
     networks:
       - choria
+    depends_on:
+      - broker.choria
 
   client.choria:
     hostname: client.choria
-    image: docker.io/choria/choria:f5624b80
+    image: docker.io/choria/choria:20220610
     dns_search: choria
     entrypoint: /bin/bash
     command: "-l"
@@ -52,8 +58,11 @@ services:
     tty: true
     volumes:
       - ./config/client:/etc/choria
+      - ./pki/ca/ca.crt:/etc/choria-ca.pem
     networks:
       - choria
+    depends_on:
+      - broker.choria
 
 networks:
   choria: {}
