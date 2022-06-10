@@ -30,6 +30,7 @@ services:
     command: server run --config /etc/choria/server.conf
     volumes:
       - ./pki/server/provisioning.jwt:/etc/choria/provisioning.jwt
+      - ./config/server/machine:/etc/choria/machine
     networks:
       - choria
     depends_on:

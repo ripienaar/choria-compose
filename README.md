@@ -45,8 +45,15 @@ The password is `secret`.
 From there basics like `choria req choria_util info` will function until your
 JWT expire in a hour.
 
-The `choria` user above is a basic user, there's also an `admin` user with full 
+The `choria` user above is a basic user, there's also an `admin` user with full
 access to all subjects on the broker.
 
 For example `choria` could not do `choria broker s backup CHORIA_EVENTS /tmp/events`
 while the `admin` user can.
+
+Autonomous Agents?
+==================
+
+The server instances are configured to support [Autonomous Agents](https://choria.io/docs/autoagents/)
+with an example in `config/server/machine/choria`, any others you add there will immediately
+activate without requiring restart of the nodes

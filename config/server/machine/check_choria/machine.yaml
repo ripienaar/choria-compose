@@ -1,0 +1,69 @@
+---
+name: check_choria
+version: 1.0.0
+initial_state: UNKNOWN
+transitions:
+- name: UNKNOWN
+  from:
+  - UNKNOWN
+  - OK
+  - WARNING
+  - CRITICAL
+  - FORCE_CHECK
+  destination: UNKNOWN
+- name: OK
+  from:
+  - UNKNOWN
+  - OK
+  - WARNING
+  - CRITICAL
+  - FORCE_CHECK
+  destination: OK
+- name: WARNING
+  from:
+  - UNKNOWN
+  - OK
+  - WARNING
+  - CRITICAL
+  - FORCE_CHECK
+  destination: WARNING
+- name: CRITICAL
+  from:
+  - UNKNOWN
+  - OK
+  - WARNING
+  - CRITICAL
+  - FORCE_CHECK
+  destination: CRITICAL
+- name: FORCE_CHECK
+  from:
+  - UNKNOWN
+  - OK
+  - WARNING
+  - CRITICAL
+  destination: FORCE_CHECK
+- name: MAINTENANCE
+  from:
+  - UNKNOWN
+  - OK
+  - WARNING
+  - CRITICAL
+  - FORCE_CHECK
+  destination: MAINTENANCE
+- name: RESUME
+  from:
+  - MAINTENANCE
+  destination: UNKNOWN
+watchers:
+- name: check
+  type: nagios
+  interval: 5m
+  state_match:
+  - UNKNOWN
+  - OK
+  - WARNING
+  - CRITICAL
+  properties:
+    last_message: 720h
+    builtin: choria_status
+    gossfile: ''

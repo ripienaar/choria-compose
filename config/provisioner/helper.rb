@@ -68,11 +68,15 @@ end
 def set_config!(request, reply)
   reply["configuration"].merge!(
     "identity" => request["identity"],
+    "loglevel" => "warn",
     "plugin.security.server_anon_tls" => "true",
     "registerinterval" => "300",
     "plugin.choria.server.provision" => "false",
     "plugin.choria.middleware_hosts" => BROKERS,
+    "plugin.choria.machine.store" => "/etc/choria/machine",
     "rpcauthorization" => "0",
+    "plugin.choria.status_file_path" => "/tmp/choria-status.json",
+    "plugin.choria.status_update_interval" => "30"
   )
 
   reply["server_claims"].merge!(
