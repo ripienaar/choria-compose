@@ -1,5 +1,5 @@
 workers: 4
-interval: 5m
+interval: 1m
 logfile: /dev/stdout
 loglevel: info
 helper: /etc/choria-provisioner/provisioner/helper.rb

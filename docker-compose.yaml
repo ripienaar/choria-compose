@@ -38,7 +38,7 @@ services:
 
   aaa.choria:
     hostname: aaa.choria
-    image: choria/aaasvc:0.6.0
+    image: choria/aaasvc:latest
     dns_search: aaa
     command: run --config /etc/aaasvc/aaa/aaa.conf
     volumes:

@@ -66,4 +66,3 @@ watchers:
   properties:
     last_message: 720h
     builtin: choria_status
-    gossfile: ''

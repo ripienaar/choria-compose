@@ -68,7 +68,7 @@ end
 def set_config!(request, reply)
   reply["configuration"].merge!(
     "identity" => request["identity"],
-    "loglevel" => "warn",
+    "loglevel" => "info",
     "plugin.security.server_anon_tls" => "true",
     "registerinterval" => "300",
     "plugin.choria.server.provision" => "false",
