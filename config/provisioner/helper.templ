@@ -69,14 +69,19 @@ def set_config!(request, reply)
   reply["configuration"].merge!(
     "identity" => request["identity"],
     "loglevel" => "info",
-    "plugin.security.server_anon_tls" => "true",
-    "registerinterval" => "300",
     "plugin.choria.server.provision" => "false",
     "plugin.choria.middleware_hosts" => BROKERS,
-    "plugin.choria.machine.store" => "/etc/choria/machine",
+    "registration_splay" => "0",
     "rpcauthorization" => "0",
-    "plugin.choria.status_file_path" => "/tmp/choria-status.json",
-    "plugin.choria.status_update_interval" => "30"
+    "registration" => "inventory_content",
+    "plugin.choria.status_file_path" => "/tmp/status.json",
+    "plugin.choria.submission.spool" => "/tmp/submission",
+    "plugin.security.issuer.names" => "choria",
+    "plugin.security.issuer.choria.public" => "ISSUER",
+    "plugin.security.provider" => "choria",
+    "plugin.security.choria.token_file" => File.join(request["ed25519_pubkey"]["directory"], "server.jwt"),
+    "plugin.security.choria.seed_file" => File.join(request["ed25519_pubkey"]["directory"], "server.seed"),
+    "plugin.choria.machine.store" => "/etc/choria/machine",
   )
 
   reply["server_claims"].merge!(

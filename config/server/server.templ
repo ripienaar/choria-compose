@@ -1,0 +1,13 @@
+plugin.security.provider = choria
+plugin.security.choria.token_file = /etc/choria/credentials/server.jwt
+plugin.security.choria.seed_file = /etc/choria/credentials/server.seed
+plugin.choria.middleware_hosts = nats://broker.choria.local:4222
+rpcauthorization = 0
+plugin.choria.submission.spool = /tmp/choria/submission
+plugin.choria.machine.store = /etc/choria/server/machine
+plugin.choria.status_file_path = /tmp/choria-status.json
+
+plugin.choria.server.provision = false
+
+plugin.security.issuer.names = choria
+plugin.security.issuer.choria.public = ISSUER

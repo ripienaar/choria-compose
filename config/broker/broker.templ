@@ -1,0 +1,20 @@
+plugin.choria.stats_port = 8222
+plugin.choria.broker_network = true
+plugin.choria.network.client_port = 4222
+plugin.choria.network.peer_port = 5222
+plugin.choria.network.stream.store = /data
+plugin.choria.network.system.user = system
+plugin.choria.network.system.password = system
+plugin.choria.middleware_hosts = nats://broker.choria.local:4222
+loglevel = info
+plugin.choria.use_srv = false
+
+plugin.security.provider = choria
+plugin.security.choria.certificate = /etc/choria/credentials/public.crt
+plugin.security.choria.key = /etc/choria/credentials/private.key
+plugin.security.choria.token_file = /etc/choria/credentials/broker.jwt
+plugin.security.choria.seed_file = /etc/choria/credentials/broker.key
+plugin.choria.network.provisioning.client_password = s3cret
+
+plugin.security.issuer.names = choria
+plugin.security.issuer.choria.public = ISSUER

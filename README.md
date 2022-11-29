@@ -13,19 +13,21 @@ There is no Puppet anywhere on this setup, it's self provisioning and
 self configuring.
 
 The environment is provisioned with ED25519 keys, clients and servers
-do not have TLS certificates.
+do not have TLS certificates other than for opening listening ports
+where it is required.
 
 Requirements?
 =============
 
 You need `easyrsa` and the `choria` binary on the machine you run this.
 For the `choria` binary, at the moment, this must be a nightly build from
-the [Nightly](https://yum.eu.choria.io/nightly/binaries/linux/) repo:
+the [Nightly](https://yum.eu.choria.io/nightly/binaries/) repo:
 
 Setup?
 ======
 
-Run `./setup.sh` that will create many certificates, JWT tokens etc
+Run `./setup.sh` that will create many certificates, JWT tokens etc, ensure
+the `easyrsa` binary is in your path.
 
 Run `docker-compose up --scale server.choria=10` to run 10 Choria servers.
 
