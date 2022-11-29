@@ -21,7 +21,7 @@ fi
 
 log "Preparing credentials in ./credentials"
 
-mkdir -p credentials/{issuer,aaasvc,server,broker}
+mkdir -p credentials/{issuer,aaasvc,server,broker,provisioner}
 
 log "Setting up CA"
 easyrsa init-pki
@@ -64,7 +64,15 @@ choria jwt server credentials/server/server.jwt server.choria.local $(cat creden
 cat config/server/server.templ|sed -e "s.ISSUER.$(cat credentials/issuer/issuer.public)." > config/server/server.conf
 
 log "Creating provisioning.jwt"
-choria jwt prov credentials/server/provisioning.jwt credentials/issuer/issuer.seed --token s3cret --urls nats://broker.choria.local:4222 --default
+choria jwt prov credentials/server/provisioning.jwt credentials/issuer/issuer.seed --token s3cret --urls nats://broker.choria.local:4222 --default --protocol-v2 --insecure
+
+log "Creating provisioner credentials"
+choria jwt keys credentials/provisioner/signer.seed credentials/provisioner/signer.public
+choria jwt client credentials/provisioner/signer.jwt provisioner_signer credentials/issuer/issuer.seed --public-key $(cat credentials/provisioner/signer.public) --server-provisioner --validity 365d --issuer
+cat config/provisioner/provisioner.templ|sed -e "s.ISSUER.$(cat credentials/issuer/issuer.public)." > config/provisioner/provisioner.yaml
+cat config/provisioner/helper.templ|sed -e "s.ISSUER.$(cat credentials/issuer/issuer.public)." > config/provisioner/helper.rb
+chmod a+x config/provisioner/helper.rb
+
 
 log "Finishing"
 find credentials -type d |xargs chmod a+x

@@ -6,9 +6,10 @@ helper: /etc/choria-provisioner/provisioner/helper.rb
 token: s3cret
 choria_insecure: false
 site: testing
-broker_provisioning_password: provS3cret
-jwt_verify_cert: /etc/choria-provisioner/pki/provisioner-jwt-signer.crt
-jwt_signing_key: /etc/choria-provisioner/pki/node-jwt-signer.key
+broker_provisioning_password: s3cret
+jwt_verify_cert: ISSUER
+jwt_signing_key: /etc/choria-provisioner/credentials/signer.seed
+jwt_signing_token: /etc/choria-provisioner/credentials/signer.jwt
 
 features:
   jwt: true

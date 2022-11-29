@@ -10,29 +10,29 @@ services:
       - ./credentials/broker:/etc/choria/credentials
     networks:
       - choria
-#
-#  provisioner.choria:
-#    hostname: provisioner.choria
-#    image: choria/provisioner:0.13.0
-#    dns_search: choria
-#    command: --config /etc/choria-provisioner/provisioner/provisioner.yaml --choria-config /etc/choria-provisioner/provisioner/choria.cfg
-#    volumes:
-#      - ./config/provisioner:/etc/choria-provisioner/provisioner
-#      - ./pki/provisioner:/etc/choria-provisioner/pki
-#    networks:
-#      - choria
-#    depends_on:
-#      - broker.choria
-#
+
+  provisioner.choria:
+    hostname: provisioner.choria.local
+    image: choria/provisioner:nightly
+    dns_search: choria
+    command: --config /etc/choria-provisioner/provisioner/provisioner.yaml --choria-config /etc/choria-provisioner/provisioner/choria.cfg
+    volumes:
+      - ./config/provisioner:/etc/choria-provisioner/provisioner
+      - ./credentials/provisioner:/etc/choria-provisioner/credentials
+    environment:
+      - USER=choria
+    networks:
+      - choria
+    depends_on:
+      - broker.choria
 
   server.choria:
     image: docker.io/choria/choria:nightly
-    hostname: server.choria.local
     dns_search: choria.local
-    command: server run --config /etc/choria/server/server.conf
+    command: server run --config /etc/choria/server.conf
     volumes:
-      - ./config/server:/etc/choria/server
-      - ./credentials/server:/etc/choria/credentials
+      - ./credentials/server/provisioning.jwt:/etc/choria/provisioning.jwt
+      - ./config/server/machine:/etc/choria/machine
     networks:
       - choria
     depends_on:

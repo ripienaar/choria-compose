@@ -4,7 +4,7 @@ What?
 A Docker Composed based Choria environment with:
 
  * Choria Broker
- * Choria Provisioner (TODO)
+ * Choria Provisioner
  * Choria AAA Server
  * Choria Server
  * Choria Client
@@ -21,7 +21,7 @@ Requirements?
 
 You need `easyrsa` and the `choria` binary on the machine you run this.
 For the `choria` binary, at the moment, this must be a nightly build from
-the [Nightly](https://yum.eu.choria.io/nightly/binaries/linux/) repo:
+the [Nightly](https://yum.eu.choria.io/nightly/binaries/) repo:
 
 Setup?
 ======

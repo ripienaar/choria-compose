@@ -5,3 +5,5 @@ EasyRSA*
 machine_data.json
 config/broker/broker.conf
 config/server/server.conf
+config/provisioner/helper.rb
+config/provisioner/provisioner.yaml
