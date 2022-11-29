@@ -29,6 +29,7 @@ services:
   server.choria:
     image: docker.io/choria/choria:nightly
     dns_search: choria.local
+    domainname: choria.local
     command: server run --config /etc/choria/server.conf
     volumes:
       - ./credentials/server/provisioning.jwt:/etc/choria/provisioning.jwt
