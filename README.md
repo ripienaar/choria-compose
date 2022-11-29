@@ -4,7 +4,7 @@ What?
 A Docker Composed based Choria environment with:
 
  * Choria Broker
- * Choria Provisioner
+ * Choria Provisioner (TODO)
  * Choria AAA Server
  * Choria Server
  * Choria Client
@@ -13,7 +13,8 @@ There is no Puppet anywhere on this setup, it's self provisioning and
 self configuring.
 
 The environment is provisioned with ED25519 keys, clients and servers
-do not have TLS certificates.
+do not have TLS certificates other than for opening listening ports
+where it is required.
 
 Requirements?
 =============
@@ -25,7 +26,8 @@ the [Nightly](https://yum.eu.choria.io/nightly/binaries/linux/) repo:
 Setup?
 ======
 
-Run `./setup.sh` that will create many certificates, JWT tokens etc
+Run `./setup.sh` that will create many certificates, JWT tokens etc, ensure
+the `easyrsa` binary is in your path.
 
 Run `docker-compose up --scale server.choria=10` to run 10 Choria servers.
 

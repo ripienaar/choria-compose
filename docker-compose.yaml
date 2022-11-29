@@ -1,65 +1,68 @@
 version: "3"
 services:
   broker.choria:
-    hostname: broker.choria
-    image: docker.io/choria/choria:20220610
-    dns_search: choria
+    hostname: broker.choria.local
+    image: docker.io/choria/choria:nightly
+    dns_search: choria.local
     command: broker run --config /etc/choria/broker/broker.conf
     volumes:
       - ./config/broker:/etc/choria/broker
-      - ./pki/broker:/etc/choria/pki
+      - ./credentials/broker:/etc/choria/credentials
     networks:
       - choria
-
-  provisioner.choria:
-    hostname: provisioner.choria
-    image: choria/provisioner:0.13.0
-    dns_search: choria
-    command: --config /etc/choria-provisioner/provisioner/provisioner.yaml --choria-config /etc/choria-provisioner/provisioner/choria.cfg
-    volumes:
-      - ./config/provisioner:/etc/choria-provisioner/provisioner
-      - ./pki/provisioner:/etc/choria-provisioner/pki
-    networks:
-      - choria
-    depends_on:
-      - broker.choria
+#
+#  provisioner.choria:
+#    hostname: provisioner.choria
+#    image: choria/provisioner:0.13.0
+#    dns_search: choria
+#    command: --config /etc/choria-provisioner/provisioner/provisioner.yaml --choria-config /etc/choria-provisioner/provisioner/choria.cfg
+#    volumes:
+#      - ./config/provisioner:/etc/choria-provisioner/provisioner
+#      - ./pki/provisioner:/etc/choria-provisioner/pki
+#    networks:
+#      - choria
+#    depends_on:
+#      - broker.choria
+#
 
   server.choria:
-    image: docker.io/choria/choria:20220610
-    dns_search: choria
-    command: server run --config /etc/choria/server.conf
+    image: docker.io/choria/choria:nightly
+    hostname: server.choria.local
+    dns_search: choria.local
+    command: server run --config /etc/choria/server/server.conf
     volumes:
-      - ./pki/server/provisioning.jwt:/etc/choria/provisioning.jwt
-      - ./config/server/machine:/etc/choria/machine
+      - ./config/server:/etc/choria/server
+      - ./credentials/server:/etc/choria/credentials
     networks:
       - choria
     depends_on:
       - broker.choria
 
   aaa.choria:
-    hostname: aaa.choria
-    image: choria/aaasvc:latest
-    dns_search: aaa
+    hostname: aaa.choria.local
+    image: choria/aaasvc:nightly
+    dns_search: choria.local
     command: run --config /etc/aaasvc/aaa/aaa.conf
+    environment:
+      - USER=choria
     volumes:
       - ./config/aaa:/etc/aaasvc/aaa
-      - ./pki/aaa:/etc/aaasvc/pki
+      - ./credentials/aaasvc:/etc/aaasvc/credentials
     networks:
       - choria
     depends_on:
       - broker.choria
 
   client.choria:
-    hostname: client.choria
-    image: docker.io/choria/choria:20220610
-    dns_search: choria
+    hostname: client.choria.local
+    image: docker.io/choria/choria:nightly
+    dns_search: choria.local
     entrypoint: /bin/bash
     command: "-l"
     stdin_open: true
     tty: true
     volumes:
       - ./config/client:/etc/choria
-      - ./pki/ca/ca.crt:/etc/choria-ca.pem
     networks:
       - choria
     depends_on:
