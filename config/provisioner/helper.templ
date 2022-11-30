@@ -6,19 +6,8 @@ require "base64"
 require "net/http"
 require "openssl"
 
-BROKERS = "nats://broker.choria:4222"
+BROKERS = "nats://broker.choria.local:4222"
 
-
-def empty_reply
-  {
-    "defer" => false,
-    "msg" => "",
-    "certificate" => "",
-    "ca" => "",
-    "configuration" => {},
-    "server_claims" => {}
-  }
-end
 
 def parse_input
   input = STDIN.read
@@ -85,12 +74,20 @@ def set_config!(request, reply)
   reply["server_claims"].merge!(
     "exp" => 5*60*60*24*365,
     "permissions" => {
-      "streams" => true
+      "streams" => true,
+      "submission" => true
     }
   )
 end
 
-reply = empty_reply
+reply = {
+  "defer" => false,
+  "msg" => "",
+  "certificate" => "",
+  "ca" => "",
+  "configuration" => {},
+  "server_claims" => {}
+}
 
 begin
   request = parse_input
@@ -100,7 +97,6 @@ begin
     publish_reply!(reply)
   end
 
-  reply["msg"] = "Config"
   set_config!(request, reply)
 
   reply["msg"] = "Done"
