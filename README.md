@@ -9,12 +9,28 @@ A Docker Composed based Choria environment with:
  * Choria Server
  * Choria Client
 
-There is no Puppet anywhere on this setup, it's self provisioning and
-self configuring.
+This demonstrates an upcoming deployment method that does not rely on
+Certificate Authorities or mTLS for security.
 
-The environment is provisioned with ED25519 keys, clients and servers
-do not have TLS certificates other than for opening listening ports
-where it is required.
+Instead we developed an ed25519 based security system that is now in
+use by Servers, Clients, Provisioning and AAA this removes the need
+for Certificate Authorities while significantly enhancing the features
+of the security system
+
+Primarily this demonstrates the work in [issue #1740](https://github.com/choria-io/go-choria/issues/1740)
+as documented in the [ADR](https://github.com/choria-io/go-choria/blob/main/protocol/v2/ADR.md).
+
+There is no Puppet anywhere on this setup, it's self provisioning and
+self configuring. This will form the basis of deployments in Enterprises
+and in Kubernetes environments where we cannot rely on Puppet.
+
+Status?
+=======
+
+As mentioned this is our test bed for playing with in-flight work, as
+such we cannot guarantee this setup will remain stable.
+
+These features are likely to see a release in January 2023 in Choria 0.27.0.
 
 Requirements?
 =============
@@ -56,3 +72,10 @@ Autonomous Agents?
 The server instances are configured to support [Autonomous Agents](https://choria.io/docs/autoagents/)
 with an example in `config/server/machine/choria`, any others you add there will immediately
 activate without requiring restart of the nodes
+
+Choria Streams?
+===============
+
+[Choria Streams](https://choria.io/docs/streams/) is enabled by default and usable
+from the `admin` user.
+
