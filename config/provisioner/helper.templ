@@ -11,6 +11,12 @@ BROKERS = "nats://broker.choria.local:4222"
 
 def parse_input
   input = STDIN.read
+
+  begin
+    File.open("/tmp/request.json", "w") {|f| f.write(input)}
+  rescue Exception
+  end
+
   request = JSON.parse(input)
   request["inventory"] = JSON.parse(request["inventory"])
 
@@ -46,6 +52,11 @@ def validate!(request, reply)
 end
 
 def publish_reply(reply)
+  begin
+    File.open("/tmp/reply.json", "w") {|f| f.write(reply.to_json)}
+  rescue Exception
+  end
+
   puts reply.to_json
 end
 
@@ -60,7 +71,8 @@ def set_config!(request, reply)
     "loglevel" => "info",
     "plugin.choria.server.provision" => "false",
     "plugin.choria.middleware_hosts" => BROKERS,
-    "rpcauthorization" => "0",
+    "rpcauthorization" => "1",
+    "rpcauthprovider" => "aaasvc",
     "plugin.choria.status_file_path" => "/tmp/status.json",
     "plugin.choria.submission.spool" => "/tmp/submission",
     "plugin.security.issuer.names" => "choria",

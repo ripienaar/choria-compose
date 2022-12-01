@@ -58,7 +58,7 @@ cp credentials/ca/ca.crt credentials/broker
 cat config/broker/broker.templ|sed -e "s.ISSUER.$(cat credentials/issuer/issuer.public)." > config/broker/broker.conf
 
 log "Creating provisioning.jwt"
-choria jwt prov credentials/server/provisioning.jwt credentials/issuer/issuer.seed --token s3cret --urls nats://broker.choria.local:4222 --default --protocol-v2 --insecure
+choria jwt prov credentials/server/provisioning.jwt credentials/issuer/issuer.seed --token s3cret --urls nats://broker.choria.local:4222 --default --protocol-v2 --insecure --update
 
 log "Creating provisioner credentials"
 choria jwt keys credentials/provisioner/signer.seed credentials/provisioner/signer.public
