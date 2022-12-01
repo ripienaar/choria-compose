@@ -19,15 +19,12 @@ where it is required.
 Requirements?
 =============
 
-You need `easyrsa` and the `choria` binary on the machine you run this.
-For the `choria` binary, at the moment, this must be a nightly build from
-the [Nightly](https://yum.eu.choria.io/nightly/binaries/) repo:
+You need docker with docker compose, this probably only works on Linux and Macs.
 
 Setup?
 ======
 
-Run `./setup.sh` that will create many certificates, JWT tokens etc, ensure
-the `easyrsa` binary is in your path.
+Run `./setup.sh` that will create many certificates, JWT tokens etc
 
 Run `docker-compose up --scale server.choria=10` to run 10 Choria servers.
 

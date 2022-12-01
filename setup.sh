@@ -10,22 +10,32 @@ log() {
 	echo
 }
 
-export EASYRSA_PKI=`pwd`/credentials/ca
-
-
 if [ -f credentials/issuer/issuer.seed ]
 then
   echo "Issuer already exist, please remove credentials/issuer/issuer.seed to recreate credentials"
   exit 1
 fi
 
+if [ -z $1 ]
+then
+  . .env
+
+  docker run \
+    --rm \
+    --entrypoint /tmp/choria/setup.sh \
+    -v `pwd`/credentials:/tmp/choria/credentials \
+    -v `pwd`/config:/tmp/choria/config \
+    -v `pwd`/setup.sh:/tmp/choria/setup.sh \
+    -w /tmp/choria \
+    --user 0 \
+    choria/choria:${CHORIA_TAG} $(id -u) $(id -g)
+
+    exit 0
+fi
+
 log "Preparing credentials in ./credentials"
 
 mkdir -p credentials/{issuer,aaasvc,server,broker,provisioner}
-
-log "Setting up CA"
-easyrsa init-pki
-easyrsa --batch build-ca nopass
 
 log "Creating Organization Issuer"
 choria jwt keys credentials/issuer/issuer.seed credentials/issuer/issuer.public
@@ -42,19 +52,14 @@ choria jwt client credentials/aaasvc/request-signer.jwt aaa_request_signer crede
 log "Creating AAA Server Signing Service"
 choria jwt keys credentials/aaasvc/signer-service.seed credentials/aaasvc/signer-service.public
 choria jwt server credentials/aaasvc/signer-service.jwt aaa.choria.local $(cat credentials/aaasvc/signer-service.public) credentials/issuer/issuer.seed --org choria --collectives choria --service
-openssl req -new -nodes -keyout credentials/aaasvc/private.key -out credentials/aaasvc/csr.req -subj "/CN=aaa.choria.local/O=Choria"
-easyrsa --batch import-req credentials/aaasvc/csr.req aaasvc
-easyrsa --batch sign-req serverClient aaasvc
-cp credentials/ca/issued/aaasvc.crt credentials/aaasvc/public.crt
+openssl genrsa -out credentials/aaasvc/private.key 2048
+openssl req -new -x509 -sha256 -key credentials/aaasvc/private.key -out credentials/aaasvc/public.crt -days 365 -subj "/O=Choria.io/CN=aaa.choria.local"
 
 log "Creating broker credentials"
 choria jwt keys credentials/broker/broker.seed credentials/broker/broker.public
 choria jwt server credentials/broker/broker.jwt broker.choria.local $(cat credentials/broker/broker.public) credentials/issuer/issuer.seed --org choria --collectives choria
-openssl req -new -nodes -keyout credentials/broker/private.key -out credentials/broker/csr.req -subj "/CN=broker.choria.local/O=Choria"
-easyrsa --batch import-req credentials/broker/csr.req broker
-easyrsa --batch sign-req serverClient broker
-cp credentials/ca/issued/broker.crt credentials/broker/public.crt
-cp credentials/ca/ca.crt credentials/broker
+openssl genrsa -out credentials/broker/private.key 2048
+openssl req -new -x509 -sha256 -key credentials/broker/private.key -out credentials/broker/public.crt -days 365 -subj "/O=Choria.io/CN=broker.choria.local"
 cat config/broker/broker.templ|sed -e "s.ISSUER.$(cat credentials/issuer/issuer.public)." > config/broker/broker.conf
 
 log "Creating provisioning.jwt"
@@ -71,3 +76,4 @@ chmod a+x config/provisioner/helper.rb
 log "Finishing"
 find credentials -type d |xargs chmod a+x
 find credentials -type f |xargs chmod a+r
+chown "$1:$2" -R credentials
