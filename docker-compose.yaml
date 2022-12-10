@@ -9,7 +9,9 @@ services:
       - ./config/broker:/etc/choria/broker
       - ./credentials/broker:/etc/choria/credentials
     networks:
-      - choria
+      - choria.broker
+      - choria.servers
+      - choria.clients
 
   provisioner.choria:
     hostname: provisioner.choria.local
@@ -22,7 +24,7 @@ services:
     environment:
       - USER=choria
     networks:
-      - choria
+      - choria.broker
     depends_on:
       - broker.choria
 
@@ -31,11 +33,13 @@ services:
     dns_search: choria.local
     domainname: choria.local
     command: server run --config /etc/choria/server.conf
+    user: root
     volumes:
       - ./credentials/server/provisioning.jwt:/etc/choria/provisioning.jwt
       - ./config/server/machine:/etc/choria/machine
+      - ./config/server/facts.yaml:/etc/choria/facts.yaml
     networks:
-      - choria
+      - choria.servers
     depends_on:
       - broker.choria
 
@@ -50,7 +54,8 @@ services:
       - ./config/aaa:/etc/aaasvc/aaa
       - ./credentials/aaasvc:/etc/aaasvc/credentials
     networks:
-      - choria
+      - choria.broker
+      - choria.clients
     depends_on:
       - broker.choria
 
@@ -65,9 +70,12 @@ services:
     volumes:
       - ./config/client:/etc/choria
     networks:
-      - choria
+      - choria.clients
     depends_on:
       - broker.choria
 
 networks:
-  choria: {}
+  choria.servers: {}
+  choria.broker: {}
+  choria.clients: {}
+

@@ -8,6 +8,10 @@ A Docker Composed based Choria environment with:
  * Choria AAA Server
  * Choria Server
  * Choria Client
+ * Sample System Info gathering Autonomous Agent
+ * Sample Choria Scout check
+ * Registration data publishing and adapters
+ * Choria Streams
 
 This demonstrates an upcoming deployment method that does not rely on
 Certificate Authorities or mTLS for security.

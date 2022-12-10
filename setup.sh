@@ -57,7 +57,7 @@ openssl req -new -x509 -sha256 -key credentials/aaasvc/private.key -out credenti
 
 log "Creating broker credentials"
 choria jwt keys credentials/broker/broker.seed credentials/broker/broker.public
-choria jwt server credentials/broker/broker.jwt broker.choria.local $(cat credentials/broker/broker.public) credentials/issuer/issuer.seed --org choria --collectives choria
+choria jwt server credentials/broker/broker.jwt broker.choria.local $(cat credentials/broker/broker.public) credentials/issuer/issuer.seed --org choria --collectives choria --subjects 'choria.node_metadata.>'
 openssl genrsa -out credentials/broker/private.key 2048
 openssl req -new -x509 -sha256 -key credentials/broker/private.key -out credentials/broker/public.crt -days 365 -subj "/O=Choria.io/CN=broker.choria.local"
 cat config/broker/broker.templ|sed -e "s.ISSUER.$(cat credentials/issuer/issuer.public)." > config/broker/broker.conf

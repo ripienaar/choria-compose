@@ -1,0 +1,36 @@
+name: facts
+version: 0.0.1
+initial_state: GATHER
+
+transitions:
+  - name: enter_maintenance
+    destination: MAINTENANCE
+    from:
+      - GATHER
+
+  - name: resume
+    destination: GATHER
+    from:
+      - MAINTENANCE
+
+watchers:
+  # We dont want a forever maintenance, so it times out after 1 day
+  - name: maintenance_timeout
+    type: timer
+    fail_transition: resume
+    state_match:
+      - MAINTENANCE
+    properties:
+      timer: 24h
+
+  # Every 10 minutes gather facts
+  - name: gather_facts
+    type: exec
+    interval: 10m
+    state_match:
+      - GATHER
+    properties:
+      gather_initial_state: true
+      suppress_success_announce: false
+      timeout: 1m
+      command: ./gather
