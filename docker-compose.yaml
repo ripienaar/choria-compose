@@ -21,8 +21,6 @@ services:
     volumes:
       - ./config/provisioner:/etc/choria-provisioner/provisioner
       - ./credentials/provisioner:/etc/choria-provisioner/credentials
-    environment:
-      - USER=choria
     networks:
       - choria.broker
     depends_on:
@@ -48,8 +46,6 @@ services:
     image: choria/aaasvc:${AAA_TAG}
     dns_search: choria.local
     command: run --config /etc/aaasvc/aaa/aaa.conf
-    environment:
-      - USER=choria
     volumes:
       - ./config/aaa:/etc/aaasvc/aaa
       - ./credentials/aaasvc:/etc/aaasvc/credentials
