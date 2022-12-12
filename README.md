@@ -7,7 +7,9 @@ A Docker Composed based Choria environment with:
  * [Choria Provisioner](https://choria-io.github.io/provisioner/)
  * [Choria AAA Service](https://choria-io.github.io/aaasvc/)
  * [Choria Server](https://choria-io.github.io/go-choria/server/) including [message submit](https://choria.io/docs/streams/submission/)
- * Choria Client
+ * Choria Registry Service enabled on the servers
+ * Choria Client with Registry access
+ * [Choria External Agent](https://choria.io/docs/development/mcorpc/externalagents/) called `requests`
  * Sample System Info gathering [Autonomous Agent](https://choria.io/docs/autoagents/)
  * Sample [Choria Scout](https://choria.io/docs/scout/) health check
  * Registration data publishing and Choria [Adapters](https://choria.io/docs/adapters/)

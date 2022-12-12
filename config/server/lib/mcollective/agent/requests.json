@@ -1,0 +1,228 @@
+{
+  "$schema": "https://choria.io/schemas/mcorpc/ddl/v1/agent.json",
+  "metadata": {
+    "license": "Apache-2.0",
+    "author": "R.I.Pienaar <rip@devco.net>",
+    "timeout": 120,
+    "name": "requests",
+    "version": "0.0.1",
+    "url": "https://choria.io",
+    "description": "Network requests agent",
+    "provider": "external"
+  },
+  "actions": [
+    {
+      "action": "request",
+      "description": "Performs a HTTP request",
+      "display": "always",
+      "input": {
+        "headers": {
+          "prompt": "Headers",
+          "description": "Request headers to send as k=v pairs",
+          "type": "hash",
+          "optional": true
+        },
+        "password": {
+          "prompt": "Password",
+          "description": "Password for authentication",
+          "type": "string",
+          "optional": true,
+          "validation": ".+",
+          "maxlength": 128
+        },
+        "query": {
+          "prompt": "Query",
+          "description": "Request query to send as k=v pairs",
+          "type": "hash",
+          "optional": true
+        },
+        "username": {
+          "prompt": "Username",
+          "description": "Username for authentication",
+          "type": "string",
+          "optional": true,
+          "validation": ".+",
+          "maxlength": 128
+        },
+        "url": {
+          "prompt": "URL",
+          "description": "Address to fetch",
+          "type": "string",
+          "optional": false,
+          "validation": ".+",
+          "maxlength": 512
+        },
+        "method": {
+          "prompt": "Method",
+          "description": "The HTTP method to use",
+          "type": "list",
+          "optional": true,
+          "list": ["GET", "PUT", "POST", "DELETE", "PATCH", "OPTIONS", "HEAD"],
+          "default": "GET"
+        },
+        "body": {
+          "prompt": "Body",
+          "description": "The body to send in the request",
+          "type": "string",
+          "optional": true,
+          "validation": ".+",
+          "maxlength": 4096
+        },
+        "body_file": {
+          "prompt": "Body File",
+          "description": "Sends a specific file locally to each node as body",
+          "type": "string",
+          "optional": true,
+          "validation": ".+",
+          "maxlength": 512
+        },
+        "statuscode": {
+          "prompt": "Expected Status code",
+          "description": "Checks the result against this status code, else expects 200",
+          "type": "integer",
+          "optional": true,
+          "default": 200
+        }
+      },
+      "output": {
+        "body": {
+          "display_as": "Body",
+          "description": "The response body",
+          "type": "string"
+        },
+        "statuscode": {
+          "display_as": "Status Code",
+          "description": "The response status code",
+          "type": "integer"
+        },
+        "headers": {
+          "display_as": "Headers",
+          "description": "The response headers",
+          "type": "hash"
+        },
+        "duration": {
+          "display_as": "Duration",
+          "description": "How long, in seconds, the request took to complete",
+          "type": "float"
+        }
+      },
+      "aggregate": [
+        {
+          "function": "summary",
+          "args": [
+            "statuscode"
+          ]
+        }
+      ]
+    },
+    {
+      "action": "download",
+      "input": {
+        "headers": {
+          "prompt": "Headers",
+          "description": "Request headers to send as k=v pairs",
+          "type": "hash",
+          "optional": true
+        },
+        "md5": {
+          "prompt": "Expected MD5",
+          "description": "If set only files matching this digest will be saved",
+          "type": "string",
+          "optional": true,
+          "validation": "^[0-9a-z]+$",
+          "maxlength": 32
+        },
+        "password": {
+          "prompt": "Password",
+          "description": "Password for authentication",
+          "type": "string",
+          "optional": true,
+          "validation": ".+",
+          "maxlength": 128
+        },
+        "query": {
+          "prompt": "Query",
+          "description": "Request query to send as k=v pairs",
+          "type": "hash",
+          "optional": true
+        },
+        "target": {
+          "prompt": "Target File",
+          "description": "File to save the response into",
+          "type": "string",
+          "optional": false,
+          "validation": ".+",
+          "maxlength": 512
+        },
+        "target_mode": {
+          "prompt": "File Mode",
+          "description": "Mode to assign to the file post download in octal numeric format",
+          "type": "string",
+          "optional": true,
+          "validation": "^\\d+$",
+          "maxlength": 4
+        },
+        "url": {
+          "prompt": "URL",
+          "description": "Address to fetch",
+          "type": "string",
+          "optional": false,
+          "validation": ".+",
+          "maxlength": 512
+        },
+        "username": {
+          "prompt": "Username",
+          "description": "Username for authentication",
+          "type": "string",
+          "optional": true,
+          "validation": ".+",
+          "maxlength": 128
+        }
+      },
+      "aggregate": [
+        {
+          "function": "summary",
+          "args": [
+            "bytes"
+          ]
+        },
+        {
+          "function": "summary",
+          "args": [
+            "md5"
+          ]
+        },
+        {
+          "function": "summary",
+          "args": [
+            "statuscode"
+          ]
+        }
+      ],
+      "output": {
+        "bytes": {
+          "description": "Number of bytes fetched",
+          "display_as": "Bytes",
+          "type": "integer"
+        },
+        "error": {
+          "description": "Error string on failure",
+          "display_as": "Error",
+          "type": "string"
+        },
+        "md5": {
+          "description": "MD5 digest of the downloaded file",
+          "display_as": "MD5",
+          "type": "string"
+        },
+        "statuscode": {
+          "description": "HTTP Status Code",
+          "display_as": "Status",
+          "type": "integer"
+        }
+      },
+      "display": "failed",
+      "description": "Downloads a file"
+    }
+  ]
+}
