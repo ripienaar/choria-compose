@@ -3,15 +3,15 @@ What?
 
 A Docker Composed based Choria environment with:
 
- * Choria Broker
- * Choria Provisioner
- * Choria AAA Server
- * Choria Server
+ * [Choria Broker](https://choria-io.github.io/go-choria/broker/)
+ * [Choria Provisioner](https://choria-io.github.io/provisioner/)
+ * [Choria AAA Service](https://choria-io.github.io/aaasvc/)
+ * [Choria Server](https://choria-io.github.io/go-choria/server/) including [message submit](https://choria.io/docs/streams/submission/)
  * Choria Client
- * Sample System Info gathering Autonomous Agent
- * Sample Choria Scout check
- * Registration data publishing and adapters
- * Choria Streams
+ * Sample System Info gathering [Autonomous Agent](https://choria.io/docs/autoagents/)
+ * Sample [Choria Scout](https://choria.io/docs/scout/) health check
+ * Registration data publishing and Choria [Adapters](https://choria.io/docs/adapters/)
+ * [Choria Streams](https://choria.io/docs/streams/)
 
 This demonstrates an upcoming deployment method that does not rely on
 Certificate Authorities or mTLS for security.
@@ -22,11 +22,20 @@ for Certificate Authorities while significantly enhancing the features
 of the security system
 
 Primarily this demonstrates the work in [issue #1740](https://github.com/choria-io/go-choria/issues/1740)
-as documented in the [ADR](https://github.com/choria-io/go-choria/blob/main/protocol/v2/ADR.md).
+as documented in the [ADR](https://choria-io.github.io/go-choria/adr/001/index.html)
 
 There is no Puppet anywhere on this setup, it's self provisioning and
 self configuring. This will form the basis of deployments in Enterprises
 and in Kubernetes environments where we cannot rely on Puppet.
+
+Network?
+========
+
+We create 3 networks with the various components deployed, no TCP traffic can move from Client to Servers directly.
+
+![Network Layout](network.png)
+
+**NOTE:** While this shows 2 seperate AAA components, in this case we deploy one process that runs 2 services.
 
 Status?
 =======
@@ -75,7 +84,7 @@ Autonomous Agents?
 
 The server instances are configured to support [Autonomous Agents](https://choria.io/docs/autoagents/)
 with an example in `config/server/machine/choria`, any others you add there will immediately
-activate without requiring restart of the nodes
+activate without requiring restart of the nodes.
 
 Choria Streams?
 ===============
