@@ -134,6 +134,15 @@ Report for fact: memory.size
 Finished processing 10 / 10 hosts in 418ms
 ```
 
+Facts are a key enabler for discovery, you can address RPC requests using filters:
+
+```
+[choria@client /]$ choria req rpcutil ping -F memory.size=7959
+Discovering nodes using the mc method .... 10
+```
+
+Discovery is a big topic, explore [Choria Discovery](https://choria.io/docs/concepts/discovery/) for details.
+
 #### Scout Status
 
 Choria Scout are some foundational monitoring capability built into Choria and we have 1 check active that checks Choria itself.
