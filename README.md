@@ -312,7 +312,7 @@ Above is a NAGIOS format check that verifies various aspects of a running Choria
 We'll revisit the server again in other sections like Provisioning.
 
 The Server hosts a `Requests Agent` that's a RPC agent built using the [External Agent Package](https://github.com/choria-io/go-external) and 
-deployed in `/var/lib/choria/plugins/agent`.  When accessed the server will spawn this binary on demand.
+deployed in `/var/lib/choria/plugins/agent`.  When accessed the server will spawn this binary on demand. The source for this agent can be found at GitHub [https://github.com/ripienaar/requests-agent](https://github.com/ripienaar/requests-agent).
 
 #### Message Submission
 
