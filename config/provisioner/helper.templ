@@ -81,6 +81,8 @@ def set_config!(request, reply)
     "plugin.security.choria.token_file" => File.join(request["ed25519_pubkey"]["directory"], "server.jwt"),
     "plugin.security.choria.seed_file" => File.join(request["ed25519_pubkey"]["directory"], "server.seed"),
     "plugin.choria.machine.store" => "/etc/choria/machine",
+    "plugin.choria.services.registry.store" => "/var/lib/choria/plugins",
+    "plugin.choria.agent_provider.mcorpc.libdir" => "/var/lib/choria/plugins",
     "registration" => "inventory_content",
     "registerinterval" => "60",
     "plugin.yaml" => "/etc/choria/facts.json",
@@ -90,7 +92,8 @@ def set_config!(request, reply)
     "exp" => 5*60*60*24*365,
     "permissions" => {
       "streams" => true,
-      "submission" => true
+      "submission" => true,
+      "service_host" => true,
     }
   )
 end
