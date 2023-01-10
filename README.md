@@ -34,9 +34,11 @@ and in Kubernetes environments where we cannot rely on Puppet.
 
 ## Network Components
 
-We create 3 networks with the various components deployed, no TCP traffic can move from Client to Servers directly.
+We create 4 networks with the various components deployed, no TCP traffic can move from Client to Servers directly.
 
 ![Network Layout](network.png)
+
+The network hosting a NATS Server will have data replicated to it, it will be completely disconnected from any Choria infrastructure unable to influence them in any way, but it will get a real time copy of node metadata via Stream Replicator.
 
 **NOTE:** While this shows 2 seperate AAA components, in this case we deploy one process that runs 2 services.
 
