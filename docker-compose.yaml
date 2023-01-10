@@ -13,10 +13,41 @@ services:
       - choria.servers
       - choria.clients
 
+  nats.choria:
+    hostname: nats.choria.local
+    image: nats:alpine
+    dns_search: choria.local
+    command: -js
+    networks:
+      - nats
+
+  nats-box.choria:
+    hostname: nats-box.choria.local
+    image: natsio/nats-box:latest
+    dns_search: choria.local
+    tty: true
+    networks:
+      - nats
+
+  replicator.choria:
+    hostname: replicator.choria.local
+    image: choria/stream-replicator:${SR_TAG}
+    dns_search: choria.local
+    command: replicate --config /etc/stream-replicator/sr.yaml
+    volumes:
+      - ./config/stream-replicator:/etc/stream-replicator/
+      - ./credentials/stream-replicator:/etc/stream-replicator/credentials
+    networks:
+      - choria.broker
+      - nats
+    depends_on:
+      - broker.choria
+      - nats.choria
+
   provisioner.choria:
     hostname: provisioner.choria.local
     image: choria/provisioner:${PROV_TAG}
-    dns_search: choria
+    dns_search: choria.local
     command: --config /etc/choria-provisioner/provisioner/provisioner.yaml --choria-config /etc/choria-provisioner/provisioner/choria.cfg
     volumes:
       - ./config/provisioner:/etc/choria-provisioner/provisioner
@@ -75,4 +106,5 @@ networks:
   choria.servers: {}
   choria.broker: {}
   choria.clients: {}
+  nats: {}
 

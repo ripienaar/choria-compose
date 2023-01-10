@@ -1,0 +1,13 @@
+name: COMPOSE
+monitor_port: 8082
+loglevel: info
+state_store: /tmp
+streams:
+  - stream: CHORIA_REGISTRATION
+    start_sequence: 0
+    source_url: nats://broker.choria.local:4222
+    target_url: nats://nats.choria.local:4222
+    source_choria:
+      seed_file: /etc/stream-replicator/credentials/choria.seed
+      jwt_file: /etc/stream-replicator/credentials/choria.jwt
+      collective: choria

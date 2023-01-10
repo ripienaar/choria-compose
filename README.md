@@ -14,6 +14,8 @@ A Docker Composed based Choria environment with:
  * Sample [Choria Scout](https://choria.io/docs/scout/) health check
  * Registration data publishing and Choria [Adapters](https://choria.io/docs/adapters/)
  * [Choria Streams](https://choria.io/docs/streams/)
+ * [NATS Server](https://nats.io) with the `nats` CLI to demonstrate Stream Replicator
+ * [Stream Replicator](https://github.com/choria-io/stream-replicator)
 
 This demonstrates an upcoming deployment method that does not rely on
 Certificate Authorities or mTLS for security.
@@ -84,12 +86,12 @@ Below we'll explore a few features enabled in this network. You do not need to k
 ### Autonomous Agents
 
 The server instances are configured to support [Autonomous Agents](https://choria.io/docs/autoagents/)
-with 2 examples in `config/server/machine`, any others you add there will immediately activate 
+with 2 examples in `config/server/machine`, any others you add there will immediately activate
 without requiring restart of the nodes.
 
 #### System Facts Gathering
 
-The `facts` Autonomous Agent will gather system facts using the `github.com/AstroProfundis/sysinfo` go package, 
+The `facts` Autonomous Agent will gather system facts using the `github.com/AstroProfundis/sysinfo` go package,
 it will save the result into `/etc/choria/facts.json`. The first gather should run within a minute or so of startup
 and then every 10 minutes.
 
@@ -155,7 +157,7 @@ $ choria scout trigger
 Finished processing 10 / 10 hosts in 414ms
 ```
 
-Now we can check one of the nodes status, might be interesting to run `choria scout watch` (requires `choria login` as `admin`) 
+Now we can check one of the nodes status, might be interesting to run `choria scout watch` (requires `choria login` as `admin`)
 in another terminal before running this what you will see is CloudEvents issued by Autonomous Agent system about state changes:
 
 ```
@@ -171,7 +173,7 @@ $ choria scout status c41fdd9c6c82.choria.local
 │ check_choria │ OK    │ 2m3s       │ OK      │
 ╰──────────────┴───────┴────────────┴─────────╯
 
-Finished processing 1 / 1 hosts in 49ms 
+Finished processing 1 / 1 hosts in 49ms
 ```
 
 ### Choria Streams
@@ -217,6 +219,38 @@ We can see the raw messages that will be [choria:adapters:choria_streams:output:
 $ choria broker s view CHORIA_REGISTRATION
 ```
 
+### Choria Stream Replicator
+
+The purpose of Stream Replicator is to move data from one NATS JetStream based server to another.  In Choria land that often means moving data from Choria Broker in a datanceter to a centralised NATS JetStream Server for processing, data mining and more.
+
+Here we have it set up to move the `CHORIA_REGISTRATION` stream from Choria Broker to a standalone NATS Server.
+
+Once the `CHORIA_REGISTRATION` is created you will notice in logs the Stream Replicator component stops logging errors, from then on the data stored in `CHORIA_REGISTRATION` stream made in the previous section will be copied to a standard NATS Server that is running outside of the Choria network.
+
+We can confirm this is working using the `nats-box` instance:
+
+```
+$ docker compose exec nats-box.choria sh -l
+             _             _
+ _ __   __ _| |_ ___      | |__   _____  __
+| '_ \ / _` | __/ __|_____| '_ \ / _ \ \/ /
+| | | | (_| | |_\__ \_____| |_) | (_) >  <
+|_| |_|\__,_|\__|___/     |_.__/ \___/_/\_\
+
+nats-box v0.13.3
+nats-box:~#
+nats-box:~# nats --server nats.choria.local:4222 stream list
+╭─────────────────────────────────────────────────────────────────────────────────────────────╮
+│                                           Streams                                           │
+├─────────────────────┬─────────────┬─────────────────────┬──────────┬─────────┬──────────────┤
+│ Name                │ Description │ Created             │ Messages │ Size    │ Last Message │
+├─────────────────────┼─────────────┼─────────────────────┼──────────┼─────────┼──────────────┤
+│ CHORIA_REGISTRATION │             │ 2023-01-10 14:04:50 │ 1        │ 2.0 KiB │ 32.23s       │
+╰─────────────────────┴─────────────┴─────────────────────┴──────────┴─────────┴──────────────╯
+```
+
+Data mining can now hypothetically happen on this isolated NATS Server and settings like retention values for how long data is to be kept can be configured differently here than in the specific data centers.
+
 ### Choria Broker
 
 The [Choria Broker](https://choria-io.github.io/go-choria/broker/) is the main point of communication between Clients and Servers
@@ -226,7 +260,7 @@ Here we'll show how to interact with it for monitoring and status gathering, you
 
 Let's look at the running server, in a Production setup you would see clusters of Brokers here.
 
-In order to access any of these commands your user needs to have `org_admin` or `system_user` permissions and you need these lines in 
+In order to access any of these commands your user needs to have `org_admin` or `system_user` permissions and you need these lines in
 both the Broker and Client config:
 
 ```ini
@@ -313,14 +347,14 @@ We can check its status (this is what the Scout watch also checks):
 {"identity":"39933eff58a8.choria.local","uptime":2250,"connected_server":"nats://broker.choria.local:4222","last_message":1670928037,"provisioning_mode":false,"stats":{"total":12,"valid":12,"invalid":0,"passed":12,"filtered":0,"replies":12,"ttlexpired":0},"certificate_expires":"0001-01-01T00:00:00Z","token_expires":"2023-12-13T10:13:54Z"}
 
 # choria tool status --status-file /var/log/choria-status.json --provisioned --no-disconnected
-/var/log/choria-status.json OK 
+/var/log/choria-status.json OK
 ```
 
 Above is a NAGIOS format check that verifies various aspects of a running Choria Server.
 
 We'll revisit the server again in other sections like Provisioning.
 
-The Server hosts a `Requests Agent` that's a RPC agent built using the [External Agent Package](https://github.com/choria-io/go-external) and 
+The Server hosts a `Requests Agent` that's a RPC agent built using the [External Agent Package](https://github.com/choria-io/go-external) and
 deployed in `/var/lib/choria/plugins/agent`.  When accessed the server will spawn this binary on demand. The source for this agent can be found at GitHub [https://github.com/ripienaar/requests-agent](https://github.com/ripienaar/requests-agent).
 
 #### Message Submission
@@ -490,7 +524,7 @@ You should see many requests on your Request Catcher and response received by ea
 
 #### Go Client Library
 
-I won't go into detail about using this library, but you can generate a Golang client for the `requests` agent easily. 
+I won't go into detail about using this library, but you can generate a Golang client for the `requests` agent easily.
 
 We need the agent schema that was fetched from the registry:
 
