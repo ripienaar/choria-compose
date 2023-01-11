@@ -15,7 +15,7 @@ A Docker Composed based Choria environment with:
  * Registration data publishing and Choria [Adapters](https://choria.io/docs/adapters/)
  * [Choria Streams](https://choria.io/docs/streams/)
  * [NATS Server](https://nats.io) with the `nats` CLI to demonstrate Stream Replicator
- * [Stream Replicator](https://github.com/choria-io/stream-replicator)
+ * [Stream Replicator](https://choria-io.github.io/stream-replicator/)
 
 This demonstrates an upcoming deployment method that does not rely on
 Certificate Authorities or mTLS for security.
