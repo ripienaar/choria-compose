@@ -15,17 +15,9 @@ services:
 
   nats.choria:
     hostname: nats.choria.local
-    image: nats:alpine
+    image: synadia/nats-server:nightly
     dns_search: choria.local
     command: -js
-    networks:
-      - nats
-
-  nats-box.choria:
-    hostname: nats-box.choria.local
-    image: natsio/nats-box:latest
-    dns_search: choria.local
-    tty: true
     networks:
       - nats
 

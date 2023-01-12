@@ -229,19 +229,11 @@ Here we have it set up to move the `CHORIA_REGISTRATION` stream from Choria Brok
 
 Once the `CHORIA_REGISTRATION` is created you will notice in logs the Stream Replicator component stops logging errors, from then on the data stored in `CHORIA_REGISTRATION` stream made in the previous section will be copied to a standard NATS Server that is running outside of the Choria network.
 
-We can confirm this is working using the `nats-box` instance:
+We can confirm this is working using the `nats` instance:
 
 ```
-$ docker compose exec nats-box.choria sh -l
-             _             _
- _ __   __ _| |_ ___      | |__   _____  __
-| '_ \ / _` | __/ __|_____| '_ \ / _ \ \/ /
-| | | | (_| | |_\__ \_____| |_) | (_) >  <
-|_| |_|\__,_|\__|___/     |_.__/ \___/_/\_\
-
-nats-box v0.13.3
-nats-box:~#
-nats-box:~# nats --server nats.choria.local:4222 stream list
+$ docker compose exec nats.choria sh -l
+nats:~# nats stream list
 ╭─────────────────────────────────────────────────────────────────────────────────────────────╮
 │                                           Streams                                           │
 ├─────────────────────┬─────────────┬─────────────────────┬──────────┬─────────┬──────────────┤
@@ -252,6 +244,36 @@ nats-box:~# nats --server nats.choria.local:4222 stream list
 ```
 
 Data mining can now hypothetically happen on this isolated NATS Server and settings like retention values for how long data is to be kept can be configured differently here than in the specific data centers.
+
+We can view the copied data and note additional information is included:
+
+```
+nats:/# nats s get -S '>' CHORIA_REGISTRATION
+Item: CHORIA_REGISTRATION#80 received 2023-01-12 13:58:02.307709499 +0000 UTC on Subject choria.node_metadata.d4ed2655ddae.choria.local
+
+Headers:
+  Choria-SR-Source: CHORIA_REGISTRATION 20 COMPOSE COMPOSE 1673531882307
+
+{"protocol":"choria:adapters:choria_streams:output:1",......
+```
+
+The header indicates that Source of this message so that one can track back from replication target to source.  Here we can see it's from the `CHORIA_REGISTRATION` stream with sequence `20` and was sent at `1673531882307` milliseconds since Unix epoch.
+
+```
+nats:/# date -d @$(  echo "(1673531882307 + 500) / 1000" | bc)
+Thu Jan 12 13:58:02 UTC 2023
+```
+
+We can fetch the source message in the Choria Broker and compare time stamps:
+
+```
+$ choria broker s get CHORIA_REGISTRATION 20
+Item: CHORIA_REGISTRATION#20 received 2023-01-12 13:58:02.307152119 +0000 UTC on Subject choria.node_metadata.d4ed2655ddae.choria.local
+....
+```
+
+We can see the timestamps align the message had sub 1 second delay from being created in the source till being replicated into the target.
+
 
 ### Choria Broker
 
