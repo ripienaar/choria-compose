@@ -74,7 +74,7 @@ chmod a+x config/provisioner/helper.rb
 
 log "Creating replicator credentials"
 choria jwt keys credentials/stream-replicator/choria.seed credentials/stream-replicator/choria.public
-choria jwt client credentials/stream-replicator/choria.jwt stream_replicator credentials/issuer/issuer.seed --public-key $(cat credentials/stream-replicator/choria.public) --validity 365d --no-fleet-management
+choria jwt client credentials/stream-replicator/choria.jwt stream_replicator credentials/issuer/issuer.seed --public-key $(cat credentials/stream-replicator/choria.public) --validity 365d --no-fleet-management --stream-user --publish "choria.stream-replicator.sync.>" --publish "choria.node_advisories.>" --subscribe "choria.stream-replicator.sync.>"
 
 log "Finishing"
 find credentials -type d |xargs chmod a+x
