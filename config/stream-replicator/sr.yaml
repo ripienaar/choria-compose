@@ -18,3 +18,17 @@ streams:
       seed_file: /etc/stream-replicator/credentials/choria.seed
       jwt_file: /etc/stream-replicator/credentials/choria.jwt
       collective: choria
+
+heartbeats:
+  interval: 10s
+  url: nats://broker.choria.local:4222
+  headers:
+    from: choria_compose
+
+  choria:
+    seed_file: /etc/stream-replicator/credentials/choria.seed
+    jwt_file: /etc/stream-replicator/credentials/choria.jwt
+    collective: choria
+
+  subjects:
+    - subject: choria.node_metadata._monitor
