@@ -2,7 +2,7 @@ version: "3"
 services:
   broker.choria:
     hostname: broker.choria.local
-    image: docker.io/choria/choria:${CHORIA_TAG}
+    image: ${CHORIA_IMAGE}:${CHORIA_TAG}
     dns_search: choria.local
     command: broker run --config /etc/choria/broker/broker.conf
     volumes:
@@ -23,7 +23,7 @@ services:
 
   replicator.choria:
     hostname: replicator.choria.local
-    image: choria/stream-replicator:${SR_TAG}
+    image: ${SR_IMAGE}:${SR_TAG}
     dns_search: choria.local
     command: replicate --config /etc/stream-replicator/sr.yaml
     volumes:
@@ -38,7 +38,7 @@ services:
 
   provisioner.choria:
     hostname: provisioner.choria.local
-    image: choria/provisioner:${PROV_TAG}
+    image: ${PROV_IMAGE}:${PROV_TAG}
     dns_search: choria.local
     command: --config /etc/choria-provisioner/provisioner/provisioner.yaml --choria-config /etc/choria-provisioner/provisioner/choria.cfg
     volumes:
@@ -50,7 +50,7 @@ services:
       - broker.choria
 
   server.choria:
-    image: docker.io/choria/choria:${CHORIA_TAG}
+    image: ${CHORIA_IMAGE}:${CHORIA_TAG}
     dns_search: choria.local
     domainname: choria.local
     command: server run --config /etc/choria/server.conf
@@ -67,7 +67,7 @@ services:
 
   aaa.choria:
     hostname: aaa.choria.local
-    image: choria/aaasvc:${AAA_TAG}
+    image: ${AAA_IMAGE}:${AAA_TAG}
     dns_search: choria.local
     command: run --config /etc/aaasvc/aaa/aaa.conf
     volumes:
@@ -81,7 +81,7 @@ services:
 
   client.choria:
     hostname: client.choria.local
-    image: docker.io/choria/choria:${CHORIA_TAG}
+    image: ${CHORIA_IMAGE}:${CHORIA_TAG}
     dns_search: choria.local
     entrypoint: /bin/bash
     command: "-l"
