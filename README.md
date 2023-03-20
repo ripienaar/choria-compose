@@ -57,6 +57,8 @@ You need docker with docker compose, this probably only works on Linux and Intel
 
 Run `./setup.sh` that will create many certificates, JWT tokens etc
 
+Run `docker compose pull` to ensure you have the latest nightly builds locally
+
 Run `docker compose up --scale server.choria=10` to run 10 Choria servers.
 
 Run `docker compose exec client.choria bash -l` to get a shell.
