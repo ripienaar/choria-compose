@@ -250,7 +250,7 @@ Data mining can now hypothetically happen on this isolated NATS Server and setti
 We can view the copied data and note additional information is included:
 
 ```
-nats:/# nats s get -S '>' CHORIA_REGISTRATION
+nats:/# nats s get -S 'choria.node_metadata.*.choria.local' CHORIA_REGISTRATION
 Item: CHORIA_REGISTRATION#80 received 2023-01-12 13:58:02.307709499 +0000 UTC on Subject choria.node_metadata.d4ed2655ddae.choria.local
 
 Headers:
@@ -276,6 +276,7 @@ Item: CHORIA_REGISTRATION#20 received 2023-01-12 13:58:02.307152119 +0000 UTC on
 
 We can see the timestamps align the message had sub 1 second delay from being created in the source till being replicated into the target.
 
+Additionally we have the [End-to-End Latency Monitoring](https://choria-io.github.io/stream-replicator/monitoring/index.html#end-to-end-latency-monitoring) feature enabled, publishing to `choria.node_metadata._monitor` regularly.
 
 ### Choria Broker
 
