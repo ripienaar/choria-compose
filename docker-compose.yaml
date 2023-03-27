@@ -58,7 +58,6 @@ services:
     volumes:
       - ./credentials/server/provisioning.jwt:/etc/choria/provisioning.jwt
       - ./config/server/machine:/etc/choria/machine
-      - ./config/server/facts.yaml:/etc/choria/facts.yaml
       - ./config/server/lib:/var/lib/choria/plugins
     networks:
       - choria.servers
