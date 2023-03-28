@@ -28,7 +28,7 @@ then
     -v `pwd`/setup.sh:/tmp/choria/setup.sh \
     -w /tmp/choria \
     --user 0 \
-    choria/choria:${CHORIA_TAG} $(id -u) $(id -g)
+    ${CHORIA_IMAGE}:${CHORIA_TAG} $(id -u) $(id -g)
 
     exit 0
 fi
