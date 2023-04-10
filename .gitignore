@@ -5,6 +5,7 @@ EasyRSA*
 machine_data.json
 config/broker/broker.conf
 config/server/server.conf
+config/server/lib/mcollective/agent/requests
 config/provisioner/helper.rb
 config/provisioner/provisioner.yaml
 go-choria

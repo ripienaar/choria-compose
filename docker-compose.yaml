@@ -1,5 +1,13 @@
 version: "3"
 services:
+  plugins.choria:
+    hostname: plugins.choria.local
+    image: httpd:latest
+    dns_search: choria.local
+    volumes:
+      - ./config/docroot:/usr/local/apache2/htdocs/
+    networks:
+      - choria.servers
   broker.choria:
     hostname: broker.choria.local
     image: ${CHORIA_IMAGE}:${CHORIA_TAG}
@@ -58,11 +66,12 @@ services:
     volumes:
       - ./credentials/server/provisioning.jwt:/etc/choria/provisioning.jwt
       - ./config/server/machine:/etc/choria/machine
-      - ./config/server/lib:/var/lib/choria/plugins
+      - ./go-choria:/usr/bin/choria
     networks:
       - choria.servers
     depends_on:
       - broker.choria
+      - plugins.choria
 
   aaa.choria:
     hostname: aaa.choria.local

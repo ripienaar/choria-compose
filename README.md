@@ -16,6 +16,7 @@ A Docker Composed based Choria environment with:
  * [Choria Streams](https://choria.io/docs/streams/)
  * [NATS Server](https://nats.io) with the `nats` CLI to demonstrate Stream Replicator
  * [Stream Replicator](https://choria-io.github.io/stream-replicator/)
+ * An Apache HTTP server that serves choria plugins like the Requests Agent
 
 This demonstrates an upcoming deployment method that does not rely on
 Certificate Authorities or mTLS for security.
@@ -497,6 +498,8 @@ In order to interact with RPC services Clients need DDL files - service schemas.
 
 We support a Service Registry where plugin DDLs are fetched on demand. An example is the `requests` agent, the client does not know this exist at start.
 
+**NOTE:** The requests agent is deployed as a plugin at run time and can take a minute or two to exist
+
 ```
 $ choria plugin doc requests
 Requests Agent version 0.0.1
@@ -524,6 +527,8 @@ The registry is enabled in clients using `plugin.choria.services.registry.cache 
 The Registry is a `Choria Service Agent`, it means it is a horizontally scaled service where any 1 server that hosts the service will respond to requests.  Here we run it on every server so its 10 x redundantly deployed and load balanced automatically.
 
 #### Requests Agent
+
+**NOTE:** The requests agent is deployed as a plugin at run time and can take a minute or two to exist
 
 Let's see how the `requests` works, each of the servers host one of these.
 
