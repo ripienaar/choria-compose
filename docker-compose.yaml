@@ -66,7 +66,6 @@ services:
     volumes:
       - ./credentials/server/provisioning.jwt:/etc/choria/provisioning.jwt
       - ./config/server/machine:/etc/choria/machine
-      - ./go-choria:/usr/bin/choria
     networks:
       - choria.servers
     depends_on:
