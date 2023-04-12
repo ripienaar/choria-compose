@@ -1,0 +1,29 @@
+name: external_agent_manager
+version: 0.0.1
+initial_state: MANAGE
+
+transitions:
+  - name: enter_maintenance
+    from: [ MANAGE ]
+    destination: MAINTENANCE
+
+  - name: resume
+    from: [ MAINTENANCE ]
+    destination: MANAGE
+
+  - name: to_manage
+    from: [ INITIAL ]
+    destination: MANAGE
+
+watchers:
+  - name: manage_machines
+    state_match: [ MANAGE ]
+    type: plugins
+    interval: 6m
+    properties:
+      data_item: spec
+      purge_unknown: true
+      machine_manage_interval: 5m
+      manager_machine_prefix: eam
+      plugins_directory: /var/lib/choria/plugins/mcollective/agent
+

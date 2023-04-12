@@ -6,6 +6,10 @@ machine_data.json
 config/broker/broker.conf
 config/server/server.conf
 config/server/lib/mcollective/agent/requests
+config/server/lib/submission
+config/server/machine/tmp
+config/server/lib/mcollective/agent/tmp
 config/provisioner/helper.rb
 config/provisioner/provisioner.yaml
+config/server/aem*
 go-choria

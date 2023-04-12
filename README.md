@@ -532,10 +532,8 @@ The Registry is a `Choria Service Agent`, it means it is a horizontally scaled s
 
 Let's see how the `requests` works, each of the servers host one of these.
 
-Set up a [Request Catcher](https://requestcatcher.com/) that will receive requests and lets hit it from all the servers.
-
 ```
-$ choria req requests request url=https://sdjksdjksdj.requestcatcher.com/ headers='{"hello":"world"}'
+$ choria req requests request url=http://plugins.choria.local/
 Discovering nodes using the mc method .... 10
 
 10 / 10    0s [==============================================================================] 100%
@@ -550,7 +548,7 @@ Summary of Status Code:
 Finished processing 10 / 10 hosts in 1.14s
 ```
 
-You should see many requests on your Request Catcher and response received by each server is shown as well as a summary of state.
+You should see requests logged by the httpd server.
 
 **HINT:** Try adding `--batch 1 --batch-sleep 10` to see the client batching features
 
