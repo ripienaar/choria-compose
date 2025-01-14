@@ -56,6 +56,18 @@ You need docker with docker compose, this probably only works on Linux and Intel
 
 ## Setup
 
+> [!NOTE]
+>
+> The network that these steps build is isolated and cannot be accessed remotely.
+>
+> Add the following below as part of the `broker.choria` instance in the `docker-compose.yaml` file to allow it, but be aware any Choria instance that can connect would be provisioned. You must be sure not to put this on the internet.
+>
+> ```
+> ports:
+>  - "4222:4222"
+> ```
+
+
 Run `./setup.sh` that will create many certificates, JWT tokens etc
 
 Run `docker compose pull` to ensure you have the latest nightly builds locally

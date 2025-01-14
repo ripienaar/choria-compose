@@ -1,4 +1,3 @@
-version: "3"
 services:
   plugins.choria:
     hostname: plugins.choria.local
@@ -13,6 +12,8 @@ services:
     image: ${CHORIA_IMAGE}:${CHORIA_TAG}
     dns_search: choria.local
     command: broker run --config /etc/choria/broker/broker.conf
+    # ports:
+    # - "4222:4222"
     volumes:
       - ./config/broker:/etc/choria/broker
       - ./credentials/broker:/etc/choria/credentials
