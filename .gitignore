@@ -1,6 +1,3 @@
-pki
-credentials
-EasyRSA*
 .idea
 machine_data.json
 config/broker/broker.conf
@@ -12,4 +9,5 @@ config/server/lib/mcollective/agent/tmp
 config/provisioner/helper.rb
 config/provisioner/provisioner.yaml
 config/server/aem*
+config/server/machine/eam*
 go-choria

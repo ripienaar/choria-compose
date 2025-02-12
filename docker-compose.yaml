@@ -1,4 +1,17 @@
 services:
+  setup:
+    image: ${CHORIA_IMAGE}:${CHORIA_TAG}
+    user: 0:0
+    working_dir: /tmp/choria
+    entrypoint: /tmp/setup.sh
+    environment:
+      - SILENT_EXIT=1
+    volumes:
+      - credentials:/tmp/choria
+      - ./config:/tmp/choria/config
+      - ./.env:/tmp/choria/.env
+      - ./setup.sh:/tmp/setup.sh
+
   plugins.choria:
     hostname: plugins.choria.local
     image: httpd:latest
@@ -7,6 +20,10 @@ services:
       - ./config/docroot:/usr/local/apache2/htdocs/
     networks:
       - choria.servers
+    depends_on:
+      setup:
+        condition: service_completed_successfully
+
   broker.choria:
     hostname: broker.choria.local
     image: ${CHORIA_IMAGE}:${CHORIA_TAG}
@@ -16,11 +33,20 @@ services:
     # - "4222:4222"
     volumes:
       - ./config/broker:/etc/choria/broker
-      - ./credentials/broker:/etc/choria/credentials
+      - type: volume
+        source: credentials
+        target: /etc/choria/credentials
+        read_only: true
+        volume:
+          nocopy: true
+          subpath: credentials/broker
     networks:
       - choria.broker
       - choria.servers
       - choria.clients
+    depends_on:
+      setup:
+        condition: service_completed_successfully
 
   nats.choria:
     hostname: nats.choria.local
@@ -29,6 +55,8 @@ services:
     command: -js
     networks:
       - nats
+    depends_on:
+      - broker.choria
 
   replicator.choria:
     hostname: replicator.choria.local
@@ -37,7 +65,13 @@ services:
     command: replicate --config /etc/stream-replicator/sr.yaml
     volumes:
       - ./config/stream-replicator:/etc/stream-replicator/
-      - ./credentials/stream-replicator:/etc/stream-replicator/credentials
+      - type: volume
+        source: credentials
+        target: /etc/stream-replicator/credentials
+        read_only: true
+        volume:
+          nocopy: true
+          subpath: credentials/stream-replicator
     networks:
       - choria.broker
       - nats
@@ -52,7 +86,13 @@ services:
     command: --config /etc/choria-provisioner/provisioner/provisioner.yaml --choria-config /etc/choria-provisioner/provisioner/choria.cfg
     volumes:
       - ./config/provisioner:/etc/choria-provisioner/provisioner
-      - ./credentials/provisioner:/etc/choria-provisioner/credentials
+      - type: volume
+        source: credentials
+        target: /etc/choria-provisioner/credentials
+        read_only: true
+        volume:
+          nocopy: true
+          subpath: credentials/provisioner
     networks:
       - choria.broker
     depends_on:
@@ -65,9 +105,15 @@ services:
     command: server run --config /etc/choria/server.conf
     user: root
     volumes:
-      - ./credentials/server/provisioning.jwt:/etc/choria/provisioning.jwt
       - ./config/server/machine:/etc/choria/machine
       - ./config/server/lib:/var/lib/choria/plugins
+      - type: volume
+        source: credentials
+        target: /etc/choria/provisioning.jwt
+        read_only: true
+        volume:
+          nocopy: true
+          subpath: credentials/server/provisioning.jwt
     networks:
       - choria.servers
     depends_on:
@@ -82,6 +128,13 @@ services:
     volumes:
       - ./config/aaa:/etc/aaasvc/aaa
       - ./credentials/aaasvc:/etc/aaasvc/credentials
+      - type: volume
+        source: credentials
+        target: /etc/aaasvc/credentials
+        read_only: true
+        volume:
+          nocopy: true
+          subpath: credentials/aaasvc
     networks:
       - choria.broker
       - choria.clients
@@ -102,6 +155,9 @@ services:
       - choria.clients
     depends_on:
       - broker.choria
+
+volumes:
+  credentials:
 
 networks:
   choria.servers: {}
