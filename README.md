@@ -1,6 +1,5 @@
 ## Overview
 
-
 A Docker Composed based Choria environment with:
 
  * [Choria Broker](https://choria-io.github.io/go-choria/broker/)
@@ -67,9 +66,6 @@ You need docker with docker compose, this probably only works on Linux and Intel
 >  - "4222:4222"
 > ```
 
-
-Run `./setup.sh` that will create many certificates, JWT tokens etc
-
 Run `docker compose pull` to ensure you have the latest nightly builds locally
 
 Run `docker compose up --scale server.choria=10` to run 10 Choria servers.
@@ -95,6 +91,8 @@ access to all subjects on the broker.
 
 For example `choria` could not do `choria broker s backup CHORIA_EVENTS /tmp/events`
 while the `admin` user can.
+
+Once you are done with the demo stop it and run `docker compose down -v` to remove the credentials volume and other temporary stores.
 
 ## Features Exploration
 

@@ -12,25 +12,14 @@ log() {
 
 if [ -f credentials/issuer/issuer.seed ]
 then
-  echo "Issuer already exist, please remove credentials/issuer/issuer.seed to recreate credentials"
-  exit 1
-fi
-
-if [ -z $1 ]
-then
-  . .env
-
-  docker run \
-    --rm \
-    --entrypoint /tmp/choria/setup.sh \
-    -v `pwd`/credentials:/tmp/choria/credentials \
-    -v `pwd`/config:/tmp/choria/config \
-    -v `pwd`/setup.sh:/tmp/choria/setup.sh \
-    -w /tmp/choria \
-    --user 0 \
-    ${CHORIA_IMAGE}:${CHORIA_TAG} $(id -u) $(id -g)
-
+  if [ -z ${SILENT_EXIT} ]
+  then
+    log "Issuer already exist, please remove credentials/issuer/issuer.seed to recreate credentials"
+    exit 1
+  else
+    log "Issuer already exist, continuing startup"
     exit 0
+  fi
 fi
 
 log "Preparing credentials in ./credentials"
@@ -84,6 +73,6 @@ choria jwt keys credentials/stream-replicator/choria.seed credentials/stream-rep
 choria jwt client credentials/stream-replicator/choria.jwt stream_replicator credentials/issuer/issuer.seed --public-key $(cat credentials/stream-replicator/choria.public) --validity 365d --no-fleet-management --stream-user --publish "choria.stream-replicator.sync.>" --publish "choria.node_advisories.>" --subscribe "choria.stream-replicator.sync.>" --publish "choria.node_metadata._monitor"
 
 log "Finishing"
+
 find credentials -type d |xargs chmod a+x
 find credentials -type f |xargs chmod a+r
-chown "$1:$2" -R credentials
