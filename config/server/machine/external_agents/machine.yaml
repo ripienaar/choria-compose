@@ -16,7 +16,7 @@ transitions:
     destination: MANAGE
 
 watchers:
-  - name: manage_machines
+  - name: manage_agents
     state_match: [ MANAGE ]
     type: plugins
     interval: 6m

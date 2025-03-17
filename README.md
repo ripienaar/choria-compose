@@ -17,19 +17,15 @@ A Docker Composed based Choria environment with:
  * [Stream Replicator](https://choria-io.github.io/stream-replicator/)
  * An Apache HTTP server that serves choria plugins like the Requests Agent
 
-This demonstrates an upcoming deployment method that does not rely on
-Certificate Authorities or mTLS for security.
+This demonstrates a deployment method that does not rely on Puppet or Certificate Authorities for security.
 
-Instead we developed an ed25519 based security system that is now in
-use by Servers, Clients, Provisioning and AAA this removes the need
-for Certificate Authorities while significantly enhancing the features
-of the security system
+Instead we developed an ed25519 based security system that is now in use by Servers, Clients, Provisioning and AAA this removes the need
+for Certificate Authorities while significantly enhancing the features of the security system
 
 Primarily this demonstrates the work in [issue #1740](https://github.com/choria-io/go-choria/issues/1740)
 as documented in the [ADR](https://choria-io.github.io/go-choria/adr/001/index.html)
 
-There is no Puppet anywhere on this setup, it's self provisioning and
-self configuring. This will form the basis of deployments in Enterprises
+There is no Puppet anywhere on this setup, it's self provisioning and self configuring. This will form the basis of deployments in Enterprises
 and in Kubernetes environments where we cannot rely on Puppet.
 
 ## Network Components
@@ -41,13 +37,6 @@ We create 4 networks with the various components deployed, no TCP traffic can mo
 The network hosting a NATS Server will have data replicated to it, it will be completely disconnected from any Choria infrastructure unable to influence them in any way, but it will get a real time copy of node metadata via Stream Replicator.
 
 **NOTE:** While this shows 2 seperate AAA components, in this case we deploy one process that runs 2 services.
-
-## Status
-
-As mentioned this is our test bed for playing with in-flight work, as
-such we cannot guarantee this setup will remain stable.
-
-These features are likely to see a release in January 2023 in Choria 0.27.0.
 
 ## Requirements
 
@@ -97,12 +86,6 @@ Once you are done with the demo stop it and run `docker compose down -v` to remo
 ## Features Exploration
 
 Below we'll explore a few features enabled in this network. You do not need to know all this stuff to use Choria, but for those interested in exploring it in depth this is useful. Most sites will not use 1/2 these features.
-
-### Autonomous Agents
-
-The server instances are configured to support [Autonomous Agents](https://choria.io/docs/autoagents/)
-with 2 examples in `config/server/machine`, any others you add there will immediately activate
-without requiring restart of the nodes.
 
 #### System Facts Gathering
 
@@ -160,7 +143,114 @@ Discovering nodes using the mc method .... 10
 
 Discovery is a big topic, explore [Choria Discovery](https://choria.io/docs/concepts/discovery/) for details.
 
+### Autonomous Agents
+
+The server instances are configured to support [Autonomous Agents](https://choria.io/docs/autoagents/)
+with 2 examples in `config/server/machine`, any others you add there will immediately activate
+without requiring restart of the nodes.
+
+**NOTE** The following section requires nightly or release newer than 2025-03-17.
+
+Autonomous agents can be deployed to the servers via a KV bucket and webserver.
+
+We have an example of this that deployed the `check_choria` plugin.
+
+We verify there is currently no scout check deployed to the server:
+
+```
+$ choria scout status eb9614dded4c.choria.local
+
+1 / 1    0s [==============================================================================] 100%
+
+╭─────────────────────────────────────╮
+│        Scout status history         │
+├──────┬───────┬────────────┬─────────┤
+│ Name │ State │ Last Check │ History │
+├──────┼───────┼────────────┼─────────┤
+╰──────┴───────┴────────────┴─────────╯
+
+Finished processing 1 / 1 hosts in 27ms
+```
+
+Plugin deployment requires carefully constructed packages that has a number of checksums to ensure integrty:
+
+```
+$ cd ~
+$ cp -R plugins/check_choria .
+$ cd check_choria
+$ sha256sum * > ../SHA256SUMS
+$ mv ../SHA256SUMS .
+$ cd ~
+$ tar -cvzf htdocs/check_choria-1.0.0.tar.gz check_choria
+$ sha256sum htdocs/check_choria-1.0.0.tar.gz
+6dadcfda84b2ae7bdcf7fa2573a6b4e8a04570031858b1a87ab942dd17e172d9   htdocs/check_choria-1.0.0.tar.gz
+$ sha256sum check_choria/SHA256SUMS
+ba67c8357518b0ec557315590b8b18cfc6a762e4d0cce8ed191bf75f17f29448   plugins/check_choria/SHA256SUMS
+```
+
+We then add the URL for the plugin and its checksums to a manifest file (replace with the checksums from above).
+
+```
+$ choria machine plugins add check_choria http://plugins.choria.local/check_choria-1.0.0.tar.gz 6dadcfda84b2ae7bdcf7fa2573a6b4e8a04570031858b1a87ab942dd17e172d9 ba67c8357518b0ec557315590b8b18cfc6a762e4d0cce8ed191bf75f17f29448
+```
+
+Finally we pack the manifest into a signed specification
+
+```
+$ choria machine plugins pack plugins.json credentials/plugin-signer.seed > spec.json
+```
+
+At this point we have a file `spec.json` that holds a signed manifest of plugins to deploy. It gets added to a KV bucket where the servers will deploy it.
+
+```
+$ choria kv add CHORIA_PLUGINS
+$ cat spec.json |choria kv put CHORIA_PLUGINS plugins -- -
+```
+
+After a minute or two you will see the plugin being downloaded and deployed in the server logs and `choria inventory` will show the `check_choria` Autonomous Agent loaded. The server(s) will log:
+
+```
+plugins_manager#manage_machines: Deploying plugin check_choria from http://plugins.choria.local/check_choria-1.0.0.tar.gz into /etc/choria/machine
+mm_check_choria#download: Archive http://plugins.choria.local/check_choria-1.0.0.tar.gz was deployed successfully to check_choria
+```
+
+We will see there is now a scout check deployed:
+
+```
+$ choria scout status eb9614dded4c.choria.local
+
+1 / 1    0s [==============================================================================] 100%
+
+╭─────────────────────────────────────────────────────────────╮
+│                    Scout status history                     │
+├──────────────┬─────────┬──────────────────────────┬─────────┤
+│ Name         │ State   │ Last Check               │ History │
+├──────────────┼─────────┼──────────────────────────┼─────────┤
+│ check_choria │ UNKNOWN │ 2562047h47m16.854775807s │         │
+╰──────────────┴─────────┴──────────────────────────┴─────────╯
+
+Finished processing 1 / 1 hosts in 25ms
+$ choria scout trigger
+$ choria scout status eb9614dded4c.choria.local
+[choria@client ~]$ choria scout status eb9614dded4c.choria.local
+
+1 / 1    0s [==============================================================================] 100%
+
+╭─────────────────────────────────────────────╮
+│            Scout status history             │
+├──────────────┬───────┬────────────┬─────────┤
+│ Name         │ State │ Last Check │ History │
+├──────────────┼───────┼────────────┼─────────┤
+│ check_choria │ OK    │ 13s        │ OK      │
+╰──────────────┴───────┴────────────┴─────────╯
+
+Finished processing 1 / 1 hosts in 28ms
+```
+
+
 #### Scout Status
+
+**NOTE** This requires the section about Autonomous Agents above to have been followed.
 
 Choria Scout are some foundational monitoring capability built into Choria and we have 1 check active that checks Choria itself.
 
@@ -587,6 +677,7 @@ INFO[0000] Writing requests/rpcoptions.go
 ```
 
 We'll quickly grab Golang onto the client and show it's a full valid Go package. This client is easy to use scales to 10s of thousands of servers.
+
 ```
 $ curl -OL https://go.dev/dl/go1.19.4.linux-amd64.tar.gz
 $ tar -xzf go1.19.4.linux-amd64.tar.gz

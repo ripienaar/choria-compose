@@ -24,7 +24,7 @@ fi
 
 log "Preparing credentials in ./credentials"
 
-mkdir -p credentials/{issuer,aaasvc,server,broker,provisioner,stream-replicator}
+mkdir -p credentials/{issuer,aaasvc,server,broker,provisioner,stream-replicator,client}
 
 log "Creating Organization Issuer"
 choria jwt keys credentials/issuer/issuer.seed credentials/issuer/issuer.public
@@ -54,18 +54,26 @@ cat config/broker/broker.templ|sed -e "s.ISSUER.$(cat credentials/issuer/issuer.
 log "Creating provisioning.jwt"
 choria jwt prov credentials/server/provisioning.jwt credentials/issuer/issuer.seed --token s3cret --urls nats://broker.choria.local:4222 --default --protocol-v2 --insecure --update --validity 365d
 
-log "Configuring plugins"
-plugins=$(choria machine plugins pack config/server/plugins.json credentials/issuer/issuer.seed)
+log "Creating plugins credentials"
+choria jwt keys credentials/client/plugin-signer.seed credentials/client/plugin-signer.public
+plugins=$(choria machine plugins pack config/server/plugins.json credentials/client/plugin-signer.seed)
 echo "{\"spec\": ${plugins}}" > config/server/machine/external_agents/machine_data.json
-ls -l config/server/machine/external_agents/machine_data.json
-rm -rf config/server/machines/eam_requests
+rm -rf config/server/machine/eam_requests
+rm -rf config/server/machine/check_choria
+rm -rf config/server/machine/mm_check_choria
+rm -rf config/server/machine/plugins_manager
 rm -rf config/server/lib/mcollective/agent/requests
+chmod a+w config/docroot
 
 log "Creating provisioner credentials"
 choria jwt keys credentials/provisioner/signer.seed credentials/provisioner/signer.public
 choria jwt client credentials/provisioner/signer.jwt provisioner_signer credentials/issuer/issuer.seed --public-key $(cat credentials/provisioner/signer.public) --server-provisioner --validity 365d --issuer
-cat config/provisioner/provisioner.templ|sed -e "s.ISSUER.$(cat credentials/issuer/issuer.public)." > config/provisioner/provisioner.yaml
-cat config/provisioner/helper.templ|sed -e "s.ISSUER.$(cat credentials/issuer/issuer.public)." > config/provisioner/helper.rb
+cat config/provisioner/provisioner.templ | \
+  sed -e "s.PLUGINSIGNER.$(cat credentials/client/plugin-signer.public)." | \
+  sed -e "s.ISSUER.$(cat credentials/issuer/issuer.public)." > config/provisioner/provisioner.yaml
+cat config/provisioner/helper.templ | \
+  sed -e "s.PLUGINSIGNER.$(cat credentials/client/plugin-signer.public)." | \
+  sed -e "s.ISSUER.$(cat credentials/issuer/issuer.public)." > config/provisioner/helper.rb
 chmod a+x config/provisioner/helper.rb
 
 log "Creating replicator credentials"

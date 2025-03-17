@@ -127,7 +127,6 @@ services:
     command: run --config /etc/aaasvc/aaa/aaa.conf
     volumes:
       - ./config/aaa:/etc/aaasvc/aaa
-      - ./credentials/aaasvc:/etc/aaasvc/credentials
       - type: volume
         source: credentials
         target: /etc/aaasvc/credentials
@@ -150,7 +149,16 @@ services:
     stdin_open: true
     tty: true
     volumes:
-      - ./config/client:/etc/choria
+      - ./config/client/client.conf:/etc/choria/client.conf
+      - ./config/client/plugins:/home/choria/plugins/
+      - ./config/docroot:/home/choria/htdocs/
+      - type: volume
+        source: credentials
+        target: /home/choria/credentials
+        read_only: true
+        volume:
+          nocopy: true
+          subpath: credentials/client
     networks:
       - choria.clients
     depends_on:

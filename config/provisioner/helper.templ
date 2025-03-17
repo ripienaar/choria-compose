@@ -68,7 +68,7 @@ end
 def set_config!(request, reply)
   reply["configuration"].merge!(
     "identity" => request["identity"],
-    "loglevel" => "info",
+    "loglevel" => "warn",
     "plugin.choria.server.provision" => "false",
     "plugin.choria.middleware_hosts" => BROKERS,
     "rpcauthorization" => "1",
@@ -77,7 +77,6 @@ def set_config!(request, reply)
     "plugin.choria.submission.spool" => "/var/lib/choria/submission",
     "plugin.security.issuer.names" => "choria",
     "plugin.security.issuer.choria.public" => "ISSUER",
-    "plugin.choria.machine.signing_key" => "ISSUER",
     "plugin.security.provider" => "choria",
     "plugin.security.choria.token_file" => File.join(request["ed25519_pubkey"]["directory"], "server.jwt"),
     "plugin.security.choria.seed_file" => File.join(request["ed25519_pubkey"]["directory"], "server.seed"),
@@ -87,6 +86,13 @@ def set_config!(request, reply)
     "registration" => "inventory_content",
     "registerinterval" => "60",
     "plugin.yaml" => "/etc/choria/facts.json",
+    "plugin.choria.executor.spool" => "/var/spool/choria/executor",
+    "plugin.choria.executor.enabled" => "true",
+    "plugin.choria.machine.signing_key" => "PLUGINSIGNER",
+    "plugin.machines.signing_key" => "PLUGINSIGNER",
+    "plugin.machines.key" => "plugins",
+    "plugin.machines.bucket" => "CHORIA_PLUGINS",
+    "plugin.machines.download" => "1",
   )
 
   reply["server_claims"].merge!(
