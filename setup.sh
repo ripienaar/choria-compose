@@ -33,6 +33,7 @@ log "Creating AAA Server Chain Issuer"
 choria jwt keys credentials/aaasvc/chain-signer.seed credentials/aaasvc/chain-signer.public
 choria jwt client credentials/aaasvc/chain-signer.jwt aaa_chain_delegator credentials/issuer/issuer.seed --public-key $(cat credentials/aaasvc/chain-signer.public) --issuer --no-fleet-management --validity 365d
 cp credentials/issuer/issuer.public credentials/aaasvc/
+cp credentials/issuer/issuer.public credentials/aaasvc/
 
 log "Creating AAA Server Request Signer"
 choria jwt keys credentials/aaasvc/request-signer.seed credentials/aaasvc/request-signer.public
