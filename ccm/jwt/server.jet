@@ -1,0 +1,41 @@
+- exec:
+  - "[[ Data.target ]]":
+          creates: [[ Data.target ]]
+          command: |
+             choria jwt server \
+                [[ Data.target ]] \
+                [[ Data.identity ]] \
+                [[ Data.public_key ]] \
+                [[ Data.signing_key ]] \
+                [[ range _, sub := Data.subjects ]]
+                --subjects "[[ sub ]]" \
+                [[ end ]]
+                [[ range _, collective := Data.collectives ]]
+                --collectives "[[ collective ]]" \
+                [[ end ]]
+                [[ if Data.validity ]]
+                --validity [[ Data.validity ]] \
+                [[ end ]]
+                [[ if Data.submission ]]
+                --submission \
+                [[ end ]]
+                [[ if Data.stream_user ]]
+                --stream-user \
+                [[ end ]]
+                [[ if Data.governor ]]
+                --governor \
+                [[ end ]]
+                [[ if Data.service ]]
+                --service \
+                [[ end ]]
+                [[ if Data.vault ]]
+                --vault \
+                [[ end ]]
+                --org [[ Data.org ]]
+
+- file:
+    - [[ Data.target ]]:
+        ensure: present
+        owner: [[ Data.owner ]]
+        group: [[ Data.group ]]
+        mode: "[[ Data.mode ]]"

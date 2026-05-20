@@ -1,0 +1,15 @@
+ccm:
+  resources:
+    - file:
+      - "/tmp/choria/credentials/issuer":
+            ensure: directory
+            owner: root
+            group: root
+            mode: "0755"
+
+    - apply:
+      - jwt/key.yaml:
+          alias: issuer/issuer.seed
+          data:
+            seed: /tmp/choria/credentials/issuer/issuer.seed
+            public: /tmp/choria/credentials/issuer/issuer.public

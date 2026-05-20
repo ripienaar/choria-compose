@@ -1,0 +1,61 @@
+data:
+  # The JWT file to act on
+  # @require
+  target: ""
+  # The Caller ID for this user
+  # @require
+  identity: ""
+  # Path to a private key used to sign the JWT
+  # @require
+  signing_key: ""
+  # Ed25519 public key to embed in the token
+  public_key: ""
+  # Adds the user to a specific organization
+  org: choria
+  # How long the token should be valid for
+  validity: 1h
+  # Allow the user to access certain agents
+  agents: []
+  # Additional subjects the user can publish to
+  publish: []
+  # Additional subjects the user can subscribe to
+  subscribe: []
+  # Open Policy Agent Policy as a string
+  opa: ""
+  # Allow this user to sign other users in a chain of trust
+  issuer: false
+  # Allows access to the Choria fleet using RPC
+  fleet_management: true
+  # Requires that all fleet management requests are signed by an authority like AAA Service
+  signed_fleet_management: false
+  # Allow the user to sign requests for other users
+  auth_delegation: false
+  # Allow the user to use Choria Streams
+  stream_user: false
+  # Allow the user to administer and use Choria Streams
+  stream_admin: false
+  # Allow the user to view various Choria Events
+  event_viewer: false
+  # Allow the user to use Choria Elections
+  elections_user: false
+  # Indicates that the user can have long validity tokens
+  service: false
+  # Allow the user to access the broker system account
+  system: false
+  # Allow the user to access all broker traffic
+  org_admin: false
+  # Allows the client to provision servers
+  server_provisioner: false
+  # Allows access to all governors
+  governor: false
+  # Use Hashicorp Vault to sign the JWT
+  vault: false
+  # The owner of the file
+  owner: root
+  # The group of the file
+  group: root
+  # Mode for the jwt file
+  mode: "0650"
+
+ccm:
+  resources_jet_file: client.jet

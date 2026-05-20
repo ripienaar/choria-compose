@@ -1,0 +1,22 @@
+ccm:
+  resources:
+    - file:
+      - /tmp/choria/credentials/server:
+          ensure: directory
+          owner: "2048"
+          group: "2048"
+          mode: "0755"
+
+    - apply:
+        - jwt/provisioning.yaml:
+            alias: server/provisioning.jwt
+            data:
+              target: /tmp/choria/credentials/server/provisioning.jwt
+              signing_key: /tmp/choria/credentials/issuer/issuer.seed
+              token: s3cret
+              urls: nats://broker.choria.local:4222
+              default: true
+              protocol_v2: true
+              secure: false
+              validity: 365d
+              upgrade: true

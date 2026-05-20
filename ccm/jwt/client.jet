@@ -1,0 +1,80 @@
+- exec:
+  - "[[ Data.target ]]":
+        creates: [[ Data.target ]]
+        command: |
+             choria jwt client \
+                [[ Data.target ]] \
+                [[ Data.identity ]] \
+                [[ Data.signing_key ]] \
+                [[ if Data.public_key ]]
+                --public-key [[ Data.public_key ]] \
+                [[ end ]]
+                [[ if Data.org ]]
+                --org [[ Data.org ]] \
+                [[ end ]]
+                [[ if Data.validity ]]
+                --validity [[ Data.validity ]] \
+                [[ end ]]
+                [[ range _, agent := Data.agents ]]
+                --agents "[[ agent ]]" \
+                [[ end ]]
+                [[ range _, sub := Data.publish ]]
+                --publish "[[ sub ]]" \
+                [[ end ]]
+                [[ range _, sub := Data.subscribe ]]
+                --subscribe "[[ sub ]]" \
+                [[ end ]]
+                [[ if Data.opa ]]
+                --opa "[[ Data.opa ]]" \
+                [[ end ]]
+                [[ if Data.issuer ]]
+                --issuer \
+                [[ end ]]
+                [[ if Data.signed_fleet_management ]]
+                --signed-fleet-management \
+                [[ end ]]
+                [[ if Data.auth_delegation ]]
+                --auth-delegation \
+                [[ end ]]
+                [[ if Data.stream_user ]]
+                --stream-user \
+                [[ end ]]
+                [[ if Data.stream_admin ]]
+                --stream-admin \
+                [[ end ]]
+                [[ if Data.event_viewer ]]
+                --event-viewer \
+                [[ end ]]
+                [[ if Data.elections_user ]]
+                --elections-user \
+                [[ end ]]
+                [[ if Data.service ]]
+                --service \
+                [[ end ]]
+                [[ if Data.system ]]
+                --system \
+                [[ end ]]
+                [[ if Data.org_admin ]]
+                --org-admin \
+                [[ end ]]
+                [[ if Data.server_provisioner ]]
+                --server-provisioner \
+                [[ end ]]
+                [[ if Data.governor ]]
+                --governor \
+                [[ end ]]
+                [[ if Data.vault ]]
+                --vault \
+                [[ end ]]
+                [[ if Data.fleet_management ]]
+                --fleet-management
+                [[ else ]]
+                --no-fleet-management
+                [[ end ]]
+
+- file:
+    - [[ Data.target ]]:
+        ensure: present
+        owner: [[ Data.owner ]]
+        group: [[ Data.group ]]
+        mode: "[[ Data.mode ]]"

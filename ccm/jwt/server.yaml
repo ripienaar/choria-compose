@@ -1,0 +1,44 @@
+data:
+  # The JWT file to act on
+  # @require
+  target: ""
+  # The ID for this server
+  # @require
+  identity: ""
+  # Path to a private key used to sign the JWT
+  # @require
+  signing_key: ""
+  # Ed25519 public key to embed in the token
+  # @require
+  public_key: ""
+  # Allow the server to access certain collectives
+  # @require
+  collectives: [ mcollective ]
+  # Adds the user to a specific organization
+  # @require
+  org: choria
+  # How long the token should be valid for
+  validity: 8760h
+  # Additional subjects this node may publish to
+  subjects: []
+  # Enable the node to publish to Choria Streams using Choria Submission
+  submission: false
+  # Allow the node to access Choria Streams
+  stream_user: false
+  # Allows access to all governors
+  governor: false
+  # Indicates that the user can have long validity tokens
+  service: false
+  # Use Hashicorp Vault to sign the JWT
+  vault: false
+  # The owner of the file
+  owner: root
+  # The group of the file
+  group: root
+  # Mode for the jwt file
+  mode: "0650"
+
+
+
+ccm:
+  resources_jet_file: server.jet

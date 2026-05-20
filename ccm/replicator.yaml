@@ -1,0 +1,40 @@
+ccm:
+  resources:
+    - file:
+      - /tmp/choria/credentials/stream-replicator:
+          ensure: directory
+          owner: "nobody"
+          group: "nobody"
+          mode: "0755"
+
+    - apply:
+      - jwt/key.yaml:
+          alias: stream-replicator/choria.seed
+          data:
+            seed: /tmp/choria/credentials/stream-replicator/choria.seed
+            public: /tmp/choria/credentials/stream-replicator/choria.public
+            ensure: present
+            owner: "nobody"
+            group: "nobody"
+            mode: "0644"
+
+      - jwt/client.yaml:
+          alias: stream-replicator/choria.jwt
+          data:
+            target: /tmp/choria/credentials/stream-replicator/choria.jwt
+            identity: stream_replicator
+            signing_key: /tmp/choria/credentials/issuer/issuer.seed
+            public_key: /tmp/choria/credentials/stream-replicator/choria.public
+            stream_user: true
+            fleet_management: false
+            validity: 365d
+            publish:
+              - choria.stream-replicator.sync.>
+              - choria.node_advisories.>
+              - choria.node_metadata._monitor
+            subscribe:
+              - choria.stream-replicator.sync.>
+            ensure: present
+            owner: "nobody"
+            group: "nobody"
+            mode: "0644"

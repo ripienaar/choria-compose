@@ -1,0 +1,13 @@
+ccm:
+  resources:
+    - exec:
+      - choria_repo:
+          cwd: /etc/yum.repos.d
+          creates: /etc/yum.repos.d/release.repo
+          command: curl -O https://yum.de.choria.io/release/el/release.repo
+
+    - package:
+        - choria:
+            ensure: present
+        - openssl:
+            ensure: present

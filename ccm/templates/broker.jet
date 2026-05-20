@@ -17,7 +17,7 @@ plugin.security.choria.seed_file = /etc/choria/credentials/broker.seed
 plugin.choria.network.provisioning.client_password = s3cret
 
 plugin.security.issuer.names = choria
-plugin.security.issuer.choria.public = ISSUER
+plugin.security.issuer.choria.public = [[ file("/tmp/choria/credentials/issuer/issuer.public") ]]
 
 plugin.choria.adapters = registration
 plugin.choria.adapter.registration.type = choria_streams

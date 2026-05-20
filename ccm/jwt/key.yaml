@@ -1,0 +1,35 @@
+data:
+  # The private seed file to create
+  # @require
+  seed: ~
+  # The optional public key file to create
+  public: ~
+  # The owner of the key files
+  owner: "root"
+  # The group of the key files
+  group: "root"
+  # Mode for the private seed file
+  key_mode: "0400"
+  # Mode for the public key file
+  public_mode: "0400"
+
+ccm:
+  resources:
+    - exec:
+      - key_pair:
+          creates: "${ Data.seed }"
+          command: |
+             choria jwt keys "${ Data.seed }" "${ Data.public }"
+
+    - file:
+      - ${ Data.seed }:
+          ensure: present
+          owner: ${ Data.owner }
+          group: ${ Data.group }
+          mode: "${ Data.key_mode }"
+
+      - ${ Data.public }:
+          ensure: present
+          owner: ${ Data.owner }
+          group: ${ Data.group }
+          mode: "${ Data.public_mode }"

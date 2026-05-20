@@ -1,0 +1,100 @@
+ccm:
+  resources:
+    - file:
+      - defaults:
+          owner: 2048
+          group: 2048
+          mode: "0655"
+
+      - /tmp/choria/credentials/aaasvc:
+          ensure: directory
+          mode: "0755"
+
+      - /tmp/choria/credentials/aaasvc/issuer.public:
+          ensure: present
+          source: /tmp/choria/credentials/issuer/issuer.public
+
+    - apply:
+      - jwt/key.yaml:
+          alias: chain-signer.seed
+          data:
+            seed: /tmp/choria/credentials/aaasvc/chain-signer.seed
+            public: /tmp/choria/credentials/aaasvc/chain-signer.public
+            owner: 2048
+            group: 2048
+            mode: "0655"
+
+      - jwt/key.yaml:
+          alias: request-signer.seed
+          data:
+            seed: /tmp/choria/credentials/aaasvc/request-signer.seed
+            public: /tmp/choria/credentials/aaasvc/request-signer.public
+            owner: 2048
+            group: 2048
+            mode: "0655"
+
+      - jwt/key.yaml:
+          alias: signer-service.seed
+          data:
+            seed: /tmp/choria/credentials/aaasvc/signer-service.seed
+            public: /tmp/choria/credentials/aaasvc/signer-service.public
+            owner: 2048
+            group: 2048
+            mode: "0655"
+
+    - apply:
+      - jwt/client.yaml:
+          alias: aaasvc/chain-signer.jwt
+          data:
+            target: /tmp/choria/credentials/aaasvc/chain-signer.jwt
+            identity: aaa_chain_delegator
+            public_key: /tmp/choria/credentials/aaasvc/chain-signer.public
+            signing_key: /tmp/choria/credentials/issuer/issuer.seed
+            issuer: true
+            fleet_management: false
+            validity: 365d
+            owner: 2048
+            group: 2048
+            mode: "0655"
+
+      - jwt/client.yaml:
+          alias: aaasvc/request-signer.jwt
+          data:
+            target: /tmp/choria/credentials/aaasvc/request-signer.jwt
+            identity: aaa_request_signer
+            public_key: /tmp/choria/credentials/aaasvc/request-signer.public
+            signing_key: /tmp/choria/credentials/issuer/issuer.seed
+            fleet_management: false
+            auth_delegation: true
+            validity: 365d
+            owner: 2048
+            group: 2048
+            mode: "0655"
+
+      - jwt/server.yaml:
+          alias: aaasvc/signer-service.jwt
+          data:
+            target: /tmp/choria/credentials/aaasvc/signer-service.jwt
+            identity: aaa.choria.local
+            public_key: /tmp/choria/credentials/aaasvc/signer-service.public
+            signing_key: /tmp/choria/credentials/issuer/issuer.seed
+            service: true
+            collectives:
+              - choria
+            owner: 2048
+            group: 2048
+            mode: "0655"
+
+    - exec:
+      - rsa private.key:
+          creates: /tmp/choria/credentials/aaasvc/private.key
+          command: openssl genrsa -out /tmp/choria/credentials/aaasvc/private.key 2048
+
+      - rsa public.crt:
+          creates: /tmp/choria/credentials/aaasvc/public.crt
+          command: |
+             openssl req -new -x509 -sha256 -days 365 \
+               -subj "/O=Choria.io/CN=aaa.choria.local" \
+               -addext "subjectAltName = DNS:aaa.choria.local" \
+               -key /tmp/choria/credentials/aaasvc/private.key \
+               -out /tmp/choria/credentials/aaasvc/public.crt

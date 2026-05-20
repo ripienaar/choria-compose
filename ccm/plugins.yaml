@@ -1,0 +1,38 @@
+ccm:
+  resources:
+    - file:
+      - defaults:
+          ensure: directory
+          owner: root
+          group: root
+
+      - /tmp/choria/credentials/client:
+          mode: "0700"
+      - /tmp/choria/docroot:
+          mode: "0755"
+
+    - apply:
+      - jwt/key.yaml:
+          alias: client/plugin-signer.public
+          data:
+            seed: /tmp/choria/credentials/client/plugin-signer.seed
+            public: /tmp/choria/credentials/client/plugin-signer.public
+
+    - exec:
+      - packed-plugins.json:
+          command: |
+             choria machine plugins pack \
+                /tmp/choria/config/server/plugins.json \
+                /tmp/choria/credentials/client/plugin-signer.seed \
+                --output /tmp/choria/config/client/packed-plugins.json
+
+    - file:
+      - /tmp/choria/config/server/machine/external_agents/machine_data.json:
+          ensure: present
+          owner: root
+          group: root
+          mode: "0544"
+          content: |
+               {
+                 "spec": ${ file("/tmp/choria/config/client/packed-plugins.json") }
+               }

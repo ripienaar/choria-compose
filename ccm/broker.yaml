@@ -1,0 +1,61 @@
+ccm:
+  resources:
+    - file:
+      - /tmp/choria/credentials/broker:
+          ensure: directory
+          owner: "2048"
+          group: "2048"
+          mode: "0755"
+
+    - apply:
+      - jwt/key.yaml:
+          alias: broker.seed
+          data:
+            seed: /tmp/choria/credentials/broker/broker.seed
+            public: /tmp/choria/credentials/broker/broker.public
+            owner: "2048"
+            group: "2048"
+            mode: "0755"
+
+      - jwt/server.yaml:
+          alias: broker/broker.jwt
+          data:
+            target: /tmp/choria/credentials/broker/broker.jwt
+            identity: broker.choria.local
+            public_key: /tmp/choria/credentials/broker/broker.public
+            signing_key: /tmp/choria/credentials/issuer/issuer.seed
+            subjects:
+              - choria.node_metadata.>
+            collectives:
+              - choria
+            owner: "2048"
+            group: "2048"
+            mode: "0755"
+
+    - exec:
+      - rsa private.key:
+          creates: /tmp/choria/credentials/broker/private.key
+          command: openssl genrsa -out /tmp/choria/credentials/broker/private.key 2048
+
+      - rsa public.crt:
+          creates: /tmp/choria/credentials/broker/public.crt
+          command: |
+             openssl req -new -x509 -sha256 -days 365 \
+               -subj "/O=Choria.io/CN=broker.choria.local" \
+               -addext "subjectAltName = DNS:broker.choria.local" \
+               -key /tmp/choria/credentials/broker/private.key \
+               -out /tmp/choria/credentials/broker/public.crt
+
+    - file:
+      - defaults:
+          ensure: present
+          owner: "2048"
+          group: "2048"
+          mode: "0644"
+
+      - /tmp/choria/config/broker/broker.conf:
+          content: ${ template("templates/broker.jet") }
+
+      - /tmp/choria/credentials/broker/private.key: {}
+
+      - /tmp/choria/credentials/broker/public.crt: {}
