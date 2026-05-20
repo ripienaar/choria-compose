@@ -1,0 +1,41 @@
+data:
+  # The JWT file to act on
+  # @require
+  target: ""
+  # Path to a private key used to sign the JWT
+  # @require
+  signing_key: ""
+  # Token used to secure access to the provisioning agent
+  token: ""
+  # URLs to connect to for provisioning
+  urls: ""
+  # Domain to query for SRV records to find provisioning urls
+  srv: ""
+  # Adds the node to a specific organization for trust validation
+  org: choria
+  # How long the token should be valid for
+  # @require
+  validity: 1h
+  # Username to connect to the provisioning broker with
+  username: ""
+  # Password to connect to the provisioning broker with
+  password: ""
+  # File to publish as registration data during provisioning
+  registration: ""
+  # File to use for facts during registration
+  facts: ""
+  # Adds additional extensions to the token, accepts JSON data
+  extensions: ""
+  # Enables provisioning by default
+  default: false
+  # Use version 2 network protocol and security
+  protocol_v2: false
+  # Use TLS security during provisioning
+  secure: true
+  # Allow over the air server upgrades from the Choria Provisioner
+  upgrade: false
+  # Use Hashicorp Vault to sign the JWT
+  vault: false
+
+ccm:
+  resources_jet_file: provisioning.jet

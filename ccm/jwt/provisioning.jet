@@ -1,0 +1,52 @@
+- exec:
+  - "[[ Data.target ]]":
+          creates: [[ Data.target ]]
+          command: |
+             choria jwt provisioning \
+                [[ Data.target ]] \
+                [[ Data.signing_key ]] \
+                [[ if Data.token ]]
+                --token [[ Data.token ]] \
+                [[ end ]]
+                [[ if Data.urls ]]
+                --urls [[ Data.urls ]] \
+                [[ end ]]
+                [[ if Data.srv ]]
+                --srv [[ Data.srv ]] \
+                [[ end ]]
+                [[ if Data.org ]]
+                --org [[ Data.org ]] \
+                [[ end ]]
+                [[ if Data.username ]]
+                --username [[ Data.username ]] \
+                [[ end ]]
+                [[ if Data.password ]]
+                --password [[ Data.password ]] \
+                [[ end ]]
+                [[ if Data.registration ]]
+                --registration [[ Data.registration ]] \
+                [[ end ]]
+                [[ if Data.facts ]]
+                --facts [[ Data.facts ]] \
+                [[ end ]]
+                [[ if Data.extensions ]]
+                --extensions '[[ Data.extensions ]]' \
+                [[ end ]]
+                [[ if Data.default ]]
+                --default \
+                [[ end ]]
+                [[ if Data.protocol_v2 ]]
+                --protocol-v2 \
+                [[ end ]]
+                [[ if Data.secure ]]
+                --no-insecure \
+                [[ else ]]
+                --insecure \
+                [[ end ]]
+                [[ if Data.upgrade ]]
+                --upgrade \
+                [[ end ]]
+                [[ if Data.vault ]]
+                --vault \
+                [[ end ]]
+                --validity [[ Data.validity ]]

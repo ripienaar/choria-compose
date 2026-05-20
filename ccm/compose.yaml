@@ -1,0 +1,28 @@
+ccm:
+  pre_message: |
+      
+      >> Creating configurations and credentials using Choria Configuration Manager
+
+  fail_on_error: true
+  resources:
+    - file:
+        - defaults:
+            ensure: absent
+            force: true
+
+        - /tmp/choria/config/server/machine/eam_requests: {}
+        - /tmp/choria/config/server/machine/check_choria: {}
+        - /tmp/choria/config/server/machine/mm_check_choria: {}
+        - /tmp/choria/config/server/machine/plugins_manager: {}
+        - /tmp/choria/config/server/lib/mcollective/agent/requests: {}
+        - /tmp/choria/config/client/packed-plugins.json: {}
+
+    - apply:
+        - setup.yaml: {}
+        - issuer.yaml: {}
+        - aaasvc.yaml: {}
+        - broker.yaml: {}
+        - server.yaml: {}
+        - replicator.yaml: {}
+        - plugins.yaml: {}
+        - provisioner.yaml: {}

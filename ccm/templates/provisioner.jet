@@ -7,7 +7,7 @@ token: s3cret
 choria_insecure: false
 site: testing
 broker_provisioning_password: s3cret
-jwt_verify_cert: ISSUER
+jwt_verify_cert: [[ file("/tmp/choria/credentials/issuer/issuer.public") ]]
 jwt_signing_key: /etc/choria-provisioner/credentials/signer.seed
 jwt_signing_token: /etc/choria-provisioner/credentials/signer.jwt
 

@@ -6,6 +6,7 @@ A Docker Composed based Choria environment with:
  * [Choria Provisioner](https://choria-io.github.io/provisioner/)
  * [Choria AAA Service](https://choria-io.github.io/aaasvc/)
  * [Choria Server](https://choria-io.github.io/go-choria/server/) including [message submit](https://choria.io/docs/streams/submission/)
+ * [Choria Configuration Manager](https://choria-cm.dev)
  * Choria Registry Service enabled on the servers
  * Choria Client with Registry access
  * [Choria External Agent](https://choria.io/docs/development/mcorpc/externalagents/) called `requests`
@@ -27,6 +28,8 @@ as documented in the [ADR](https://choria-io.github.io/go-choria/adr/001/index.h
 
 There is no Puppet anywhere on this setup, it's self provisioning and self configuring. This will form the basis of deployments in Enterprises
 and in Kubernetes environments where we cannot rely on Puppet.
+
+While we use Choria Configuration Manager here to configure the environment it is not required, a simple shell script would also be enough.
 
 ## Network Components
 

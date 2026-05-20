@@ -1,16 +1,14 @@
 services:
   setup:
-    image: ${CHORIA_IMAGE}:${CHORIA_TAG}
-    user: 0:0
+    image: ${CCM_IMAGE}:${CCM_TAG}
+    user: root:root
     working_dir: /tmp/choria
-    entrypoint: /tmp/setup.sh
-    environment:
-      - SILENT_EXIT=1
+    command: apply ccm/compose.yaml
     volumes:
       - credentials:/tmp/choria
       - ./config:/tmp/choria/config
+      - ./ccm:/tmp/choria/ccm
       - ./.env:/tmp/choria/.env
-      - ./setup.sh:/tmp/setup.sh
 
   plugins.choria:
     hostname: plugins.choria.local
@@ -56,7 +54,8 @@ services:
     networks:
       - nats
     depends_on:
-      - broker.choria
+      setup:
+        condition: service_completed_successfully
 
   replicator.choria:
     hostname: replicator.choria.local
@@ -159,6 +158,10 @@ services:
         volume:
           nocopy: true
           subpath: credentials/client
+
+      - credentials:/tmp/choria
+      - ./config:/tmp/choria/config
+      - ./ccm:/tmp/choria/ccm
     networks:
       - choria.clients
     depends_on:

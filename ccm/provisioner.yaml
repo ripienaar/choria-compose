@@ -1,0 +1,50 @@
+ccm:
+  resources:
+    - file:
+      - /tmp/choria/credentials/provisioner:
+          owner: root
+          group: root
+          ensure: directory
+          mode: "0755"
+
+    - apply:
+      - jwt/key.yaml:
+          alias: provisioner/signer.public
+          data:
+            seed: /tmp/choria/credentials/provisioner/signer.seed
+            public: /tmp/choria/credentials/provisioner/signer.public
+            ensure: present
+            owner: "2048"
+            group: "2048"
+            mode: "0644"
+
+    - apply:
+      - jwt/client.yaml:
+          alias: provisioner/signer.jwt
+          data:
+            identity: provisioner_signer
+            target: /tmp/choria/credentials/provisioner/signer.jwt
+            public_key: /tmp/choria/credentials/provisioner/signer.public
+            signing_key: /tmp/choria/credentials/issuer/issuer.seed
+            server_provisioner: true
+            fleet_management: false
+            issuer: true
+            validity: 365d
+            ensure: present
+            owner: "2048"
+            group: "2048"
+            mode: "0644"
+
+    - file:
+      - defaults:
+          ensure: present
+          owner: root
+          group: root
+          mode: "0644"
+
+      - /tmp/choria/config/provisioner/provisioner.yaml:
+          content: ${ template("templates/provisioner.jet") }
+
+      - /tmp/choria/config/provisioner/helper.rb:
+          mode: "0655"
+          content: ${ template("templates/helper.jet") }

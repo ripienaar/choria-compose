@@ -10,4 +10,5 @@ config/provisioner/helper.rb
 config/provisioner/provisioner.yaml
 config/server/aem*
 config/server/machine/eam*
+config/client/packed-plugins.json
 go-choria
